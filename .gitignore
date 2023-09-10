@@ -10,3 +10,4 @@ coverage
 .idea
 .vs
 .vscode
+aws-sdk-client-mock-vitest-*.tgz
