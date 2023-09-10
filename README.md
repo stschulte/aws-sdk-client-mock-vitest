@@ -1,5 +1,8 @@
 # AWS SDK Client Mock Vitest
 
+[![CI Status](https://github.com/stschulte/aws-sdk-client-mock-vitest/workflows/CI/badge.svg)](https://github.com/stschulte/aws-sdk-client-mock-vitest/actions/workflows/test.yml)
+[![npm version](https://badge.fury.io/js/aws-sdk-client-mock-vitest.svg)](https://badge.fury.io/js/aws-sdk-client-mock-vitest)
+
 This module adds custom matchers to verfiy calls to your AWS Client Mock.
 It was heavily inspired by [aws-sdk-client-mock-jest](https://www.npmjs.com/package/aws-sdk-client-mock-jest)
 

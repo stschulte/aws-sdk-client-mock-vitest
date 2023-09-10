@@ -25,5 +25,11 @@ jobs:
       - name: Test
         run: npm run test:coverage
 
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          format: lcov
+          file: "./coverage/lcov.info"
+
       - name: Build
         run: npm pack
