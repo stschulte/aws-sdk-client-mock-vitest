@@ -5,7 +5,7 @@ import {
   ExpectationResult,
 } from "@vitest/expect";
 import { MetadataBearer } from "@smithy/types";
-import { notNull, ordinalOf } from "./utils";
+import { notNull, ordinalOf } from "./utils.js";
 
 type AwsCommandConstructur<
   Input extends object,

@@ -7,7 +7,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { describe, it, expect } from "vitest";
 
-import { toHaveReceivedCommandTimes } from "../src/matcher";
+import { toHaveReceivedCommandTimes } from "../src/matcher.js";
 
 expect.extend({
   toHaveReceivedCommandTimes,

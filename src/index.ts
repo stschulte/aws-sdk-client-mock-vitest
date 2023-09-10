@@ -12,4 +12,4 @@ export {
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
   toHaveReceivedLastCommandWith,
-} from "./matcher";
+} from "./matcher.js";

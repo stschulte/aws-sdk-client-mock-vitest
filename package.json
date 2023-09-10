@@ -2,15 +2,27 @@
   "name": "aws-sdk-client-mock-vitest",
   "version": "0.0.1",
   "description": "Custom matchers for AWS SDK Client mock to be used in vitest",
-  "main": "./dist-es/index.js",
   "type": "module",
   "module": "./dist-es/index.js",
+  "main": "./dist-cjs/index.js",
   "types": "./dist-types/index.d.ts",
   "files": [
     "./dist-cjs",
     "./dist-es",
     "./dist-types"
   ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist-types/esm/index.d.ts",
+        "default": "./dist-es/index.js"
+      },
+      "require": {
+        "types": "./dist-types/cjs/index.d.ts",
+        "default": "./dist-cjs/index.js"
+      }
+    }
+  },
   "scripts": {
     "build": "npm run build:cjs && npm run build:es && npm run build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",
