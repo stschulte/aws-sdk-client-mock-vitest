@@ -227,7 +227,7 @@ const toHaveReceivedNthCommandWith: CustomMatcherFn = function (
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
-  const call = calls.length <= times ? undefined : calls[times - 1];
+  const call = calls.length < times ? undefined : calls[times - 1];
   const pass = call
     ? new ObjectContaining(input).asymmetricMatch(call.args[0].input)
     : false;

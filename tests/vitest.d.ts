@@ -1,5 +1,5 @@
-import { CustomMatcher } from "../src";
 import "vitest";
+import { CustomMatcher } from "../src";
 
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatcher<T> {}
