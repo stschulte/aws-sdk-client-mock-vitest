@@ -5,14 +5,18 @@
 [![npm version](https://badge.fury.io/js/aws-sdk-client-mock-vitest.svg)](https://badge.fury.io/js/aws-sdk-client-mock-vitest)
 
 This module adds custom matchers to verfiy calls to your AWS Client Mock.
-It was heavily inspired by [aws-sdk-client-mock-jest](https://www.npmjs.com/package/aws-sdk-client-mock-jest)
+It was heavily inspired by [aws-sdk-client-mock-jest](https://www.npmjs.com/package/aws-sdk-client-mock-jest).
 
 ## Why do you want to use the module
 
-You develop code that makes use of the AWS SDK3 and you want to write tests for it. You want to make use
-of [aws-sdk-client-mock](https://www.npmjs.com/package/aws-sdk-client-mock) and you test your code with
-[vitest](https://github.com/vitest-dev/vitest). You want to easily check wether certain commands have been
-called in your tests
+You develop code that makes use of the [AWS SDK for JavaScript v3](https://github.com/aws/aws-sdk-js-v3).
+You are already writing tests for it through the great [aws-sdk-client-mock](https://www.npmjs.com/package/aws-sdk-client-mock) package.
+You also want to ensure that your actual code performs certain calls against your AWS Client Mocks. While there
+is [aws-sdk-client-mock-jest](https://www.npmjs.com/package/aws-sdk-client-mock-jest) you prefer
+[vitest](https://github.com/vitest-dev/vitest).
+
+You can use this module to use expect extensions for vitest to ensure certain commands have been called
+on your AWS clients.
 
 ## Install
 
@@ -20,9 +24,24 @@ called in your tests
 npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
-You must register the new matchers explicity (think about putting this to a [setup file](https://vitest.dev/config/#setupfiles)):
+You must register the new matchers explicity (think about putting this to a [setup file](https://vitest.dev/config/#setupfiles)). Feel free to only extend the matchers you are intending to use
 
 ```javascript
+/*
+  you may want to put the following into a file tests/setup.ts
+  and then specify your vite.config.ts as such
+
+      import { defineConfig } from "vitest/config";
+
+      export default defineConfig({
+        test: {
+          setupFiles: ["tests/setup.ts"],
+        },
+      });
+
+  to add the custom mat chers before each test run
+*/
+import { expect } from "vitest";
 import {
   toReceiveCommandTimes,
   toHaveReceivedCommandTimes,
@@ -57,7 +76,9 @@ expect.extend({
 In case you are using typescript, create a `vitest.d.ts` file with the following content
 
 ```javascript
-import { CustomMatcher } from "aws-sdk-client-mock-vitest";
+// tests/vitest.d.ts
+import "vitest";
+import { CustomMatcher } from "../src";
 
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatcher<T> {}
@@ -143,10 +164,10 @@ import {
   toHaveReceivedCommandWith,
 } from "aws-sdk-client-mock-vitest";
 
-/* you can also run this in setupTests.ts */
+/* you can also run this in setupTests, see above */
 expect.extend({ toHaveReceivedCommandWith });
 
-/* You may want to put this in some vitest.d.ts file see https://vitest.dev/guide/extending-matchers.html */
+/* You may want to put this in some vitest.d.ts, see above */
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatcher<T> {}
   interface AsymmetricMatchersContaining extends CustomMatcher {}
@@ -171,7 +192,20 @@ describe("readSecret", () => {
 });
 ```
 
-## Thank
+## Running test
+
+In order to run tests locally, execute the following
+
+```
+npm ci
+npm run test:coverage
+```
+
+If you get an `ERR_INSPECTOR_NOT_AVAILABLE` error, make sure your nodejs is compiled with
+`inspector` support. Otherwise run `npm run test` to skip code coverage
+
+## Thank you
 
 I would like to thank Maciej Radzikowski for the awesome `aws-sdk-client-mock` and
-`aws-sdk-client-mock-jest` that helped a lot to port these matchers to vitest
+`aws-sdk-client-mock-jest` packages. These helped a lot testing AWS code and also
+helped building this library
