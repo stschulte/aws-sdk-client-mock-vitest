@@ -78,7 +78,7 @@ In case you are using typescript, create a `vitest.d.ts` file with the following
 ```javascript
 // tests/vitest.d.ts
 import "vitest";
-import { CustomMatcher } from "../src";
+import { CustomMatcher } from "aws-sdk-client-mock-vitest";
 
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatcher<T> {}
