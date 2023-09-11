@@ -2,7 +2,7 @@ import type { AwsCommand, AwsStub } from "aws-sdk-client-mock";
 import {
   MatcherState,
   ObjectContaining,
-  ExpectationResult,
+  ExpectationResult
 } from "@vitest/expect";
 import { MetadataBearer } from "@smithy/types";
 import { notNull, ordinalOf } from "./utils.js";
@@ -115,17 +115,17 @@ function formatCalls(
             "",
             expectedCall
               ? context.utils.diff(expectedCall, input, {
-                  omitAnnotationLines: true,
+                  omitAnnotationLines: true
                 })
               : context.utils
                   .stringify(input)
                   .split("\n")
-                  .map((line) => `    ${line}`)
+                  .map(line => `    ${line}`)
                   .join("\n"),
-            "",
+            ""
           ].filter(notNull);
         }),
-        `Number of calls: ${calls.length}`,
+        `Number of calls: ${calls.length}`
       ].join("\n");
 }
 
@@ -145,7 +145,7 @@ const toHaveReceivedCommandTimes: CustomMatcherFn = function (
         ? `expected "${command.name}" to not be called ${times} times`
         : `expected "${command.name}" to be called ${times} times, but got ${callCount} times`;
       return formatCalls(this, client, command, undefined, message);
-    },
+    }
   };
 };
 const toReceiveCommandTimes = toHaveReceivedCommandTimes;
@@ -164,7 +164,7 @@ const toHaveReceivedCommandOnce: CustomMatcherFn = function (
         ? `expected "${command.name}" to not be called once`
         : `expected "${command.name}" to be called once, but got ${callCount} times`;
       return formatCalls(this, client, command, undefined, message);
-    },
+    }
   };
 };
 const toReceiveCommandOnce = toHaveReceivedCommandOnce;
@@ -183,7 +183,7 @@ const toHaveReceivedCommand: CustomMatcherFn = function (
         ? `expected "${command.name}" to not be called at all, but actually been called ${callCount} times`
         : `expected "${command.name}" to be called at least once`;
       return formatCalls(this, client, command, undefined, message);
-    },
+    }
   };
 };
 const toReceiveCommand = toHaveReceivedCommand;
@@ -196,7 +196,7 @@ const toHaveReceivedCommandWith: CustomMatcherFn = function (
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
-  const pass = calls.some((call) =>
+  const pass = calls.some(call =>
     new ObjectContaining(input).asymmetricMatch(call.args[0].input)
   );
 
@@ -211,7 +211,7 @@ const toHaveReceivedCommandWith: CustomMatcherFn = function (
             command.name
           }" to be called with arguments: ${utils.printExpected(input)}`;
       return formatCalls(this, client, command, input, message);
-    },
+    }
   };
 };
 const toReceiveCommandWith = toHaveReceivedCommandWith;
@@ -243,7 +243,7 @@ const toHaveReceivedNthCommandWith: CustomMatcherFn = function (
             command.name
           }" to be called with arguments: ${utils.printExpected(input)}`;
       return formatCalls(this, client, command, input, message);
-    },
+    }
   };
 };
 const toReceiveNthCommandWith = toHaveReceivedNthCommandWith;
@@ -272,7 +272,7 @@ const toHaveReceivedLastCommandWith: CustomMatcherFn = function (
           }" to be called with arguments: ${utils.printExpected(input)}`;
       return formatCalls(this, client, command, input, message);
     },
-    pass,
+    pass
   };
 };
 const toReceiveLastCommandWith = toHaveReceivedLastCommandWith;
@@ -290,5 +290,5 @@ export {
   toReceiveNthCommandWith,
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith,
+  toHaveReceivedLastCommandWith
 };

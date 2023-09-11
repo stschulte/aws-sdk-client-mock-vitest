@@ -4,7 +4,7 @@ import {
   GetObjectAclCommand,
   GetObjectCommand,
   PutObjectCommand,
-  S3Client,
+  S3Client
 } from "@aws-sdk/client-s3";
 import { describe, it, expect } from "vitest";
 
@@ -20,7 +20,7 @@ import {
   toReceiveNthCommandWith,
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith,
+  toHaveReceivedLastCommandWith
 } from "../src/matcher";
 
 expect.extend({
@@ -35,7 +35,7 @@ expect.extend({
   toReceiveNthCommandWith,
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith,
+  toHaveReceivedLastCommandWith
 });
 
 describe("toReceiveCommandTimes", () => {
@@ -148,7 +148,6 @@ describe("toReceiveCommandOnce", () => {
 
   it.fails("should fail when not called", async () => {
     const s3Mock = mockClient(S3Client);
-    const s3 = new S3Client({});
     expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
   });
 
@@ -172,7 +171,6 @@ describe("toReceiveCommandOnce", () => {
   describe("not", () => {
     it("should pass when not called", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toReceiveCommandOnce(GetObjectCommand);
     });
 
@@ -209,7 +207,6 @@ describe("toHaveReceivedCommandOnce", () => {
 
   it.fails("should fail when not called", async () => {
     const s3Mock = mockClient(S3Client);
-    const s3 = new S3Client({});
     expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
   });
 
@@ -233,7 +230,6 @@ describe("toHaveReceivedCommandOnce", () => {
   describe("not", () => {
     it("should pass when not called", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toHaveReceivedCommandOnce(GetObjectCommand);
     });
 
@@ -264,7 +260,6 @@ describe("toHaveReceivedCommandOnce", () => {
 describe("toReceiveCommand", () => {
   it.fails("should fail when no command received", async () => {
     const s3Mock = mockClient(S3Client);
-    const s3 = new S3Client({});
     expect(s3Mock).toReceiveCommand(GetObjectCommand);
   });
 
@@ -293,7 +288,6 @@ describe("toReceiveCommand", () => {
   describe("not", () => {
     it("should pass when no command received", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
     });
 
@@ -324,7 +318,6 @@ describe("toReceiveCommand", () => {
 describe("toHaveReceivedCommand", () => {
   it.fails("should fail when no command received", async () => {
     const s3Mock = mockClient(S3Client);
-    const s3 = new S3Client({});
     expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
   });
 
@@ -353,7 +346,6 @@ describe("toHaveReceivedCommand", () => {
   describe("not", () => {
     it("should pass when no command received", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
     });
 
@@ -388,7 +380,7 @@ describe("toReceiveCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "test.txt",
+      Key: "test.txt"
     });
   });
 
@@ -397,7 +389,7 @@ describe("toReceiveCommandWith", () => {
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
-      Bucket: "foo",
+      Bucket: "foo"
     });
   });
 
@@ -410,7 +402,7 @@ describe("toReceiveCommandWith", () => {
 
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
       Bucket: "bucket2",
-      Key: "key2",
+      Key: "key2"
     });
   });
 
@@ -422,7 +414,7 @@ describe("toReceiveCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "bucket3", Key: "key3" }));
 
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
-      Key: "key2",
+      Key: "key2"
     });
   });
 
@@ -433,7 +425,7 @@ describe("toReceiveCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "test.txt",
+      Key: "test.txt"
     });
   });
 
@@ -443,7 +435,7 @@ describe("toReceiveCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test1.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test2.txt" }));
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
-      Bucket: "foo",
+      Bucket: "foo"
     });
   });
 
@@ -453,7 +445,7 @@ describe("toReceiveCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toReceiveCommandWith(PutObjectCommand, {
       Bucket: "foo",
-      Key: "test.txt",
+      Key: "test.txt"
     });
   });
 
@@ -463,7 +455,7 @@ describe("toReceiveCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "wrongkey.txt",
+      Key: "wrongkey.txt"
     });
   });
 
@@ -474,17 +466,16 @@ describe("toReceiveCommandWith", () => {
     expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
       Bucket: "foo",
       Key: "test.txt",
-      VersionId: "10",
+      VersionId: "10"
     });
   });
 
   describe("not", () => {
     it("shoud pass when never called", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toReceiveCommandWith(PutObjectCommand, {
         Bucket: "foo",
-        Key: "test.txt",
+        Key: "test.txt"
       });
     });
 
@@ -494,7 +485,7 @@ describe("toReceiveCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
       expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
         Bucket: "bar",
-        Key: "test.txt",
+        Key: "test.txt"
       });
     });
 
@@ -506,7 +497,7 @@ describe("toReceiveCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "baz", Key: "test.txt" }));
       expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
         Bucket: "bar",
-        Key: "test.txt",
+        Key: "test.txt"
       });
     });
 
@@ -517,7 +508,7 @@ describe("toReceiveCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "bar", Key: "test.txt" }));
       await s3.send(new GetObjectCommand({ Bucket: "baz", Key: "test.txt" }));
       expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
-        Bucket: "bar",
+        Bucket: "bar"
       });
     });
 
@@ -528,7 +519,7 @@ describe("toReceiveCommandWith", () => {
       expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
         Bucket: "foo",
         Key: "test.txt",
-        VersionId: "abc",
+        VersionId: "abc"
       });
     });
   });
@@ -541,7 +532,7 @@ describe("toHaveReceivedCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "test.txt",
+      Key: "test.txt"
     });
   });
 
@@ -550,7 +541,7 @@ describe("toHaveReceivedCommandWith", () => {
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
-      Bucket: "foo",
+      Bucket: "foo"
     });
   });
 
@@ -563,7 +554,7 @@ describe("toHaveReceivedCommandWith", () => {
 
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
       Bucket: "bucket2",
-      Key: "key2",
+      Key: "key2"
     });
   });
 
@@ -575,7 +566,7 @@ describe("toHaveReceivedCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "bucket3", Key: "key3" }));
 
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
-      Key: "key2",
+      Key: "key2"
     });
   });
 
@@ -586,7 +577,7 @@ describe("toHaveReceivedCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "test.txt",
+      Key: "test.txt"
     });
   });
 
@@ -596,7 +587,7 @@ describe("toHaveReceivedCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test1.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test2.txt" }));
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
-      Bucket: "foo",
+      Bucket: "foo"
     });
   });
 
@@ -606,7 +597,7 @@ describe("toHaveReceivedCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
       Bucket: "foo",
-      Key: "test.txt",
+      Key: "test.txt"
     });
   });
 
@@ -616,7 +607,7 @@ describe("toHaveReceivedCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "wrongkey.txt",
+      Key: "wrongkey.txt"
     });
   });
 
@@ -627,17 +618,16 @@ describe("toHaveReceivedCommandWith", () => {
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
       Bucket: "foo",
       Key: "test.txt",
-      VersionId: "10",
+      VersionId: "10"
     });
   });
 
   describe("not", () => {
     it("shoud pass when never called", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toHaveReceivedCommandWith(PutObjectCommand, {
         Bucket: "foo",
-        Key: "test.txt",
+        Key: "test.txt"
       });
     });
 
@@ -647,7 +637,7 @@ describe("toHaveReceivedCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "test.txt" }));
       expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
         Bucket: "bar",
-        Key: "test.txt",
+        Key: "test.txt"
       });
     });
 
@@ -659,7 +649,7 @@ describe("toHaveReceivedCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "baz", Key: "test.txt" }));
       expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
         Bucket: "bar",
-        Key: "test.txt",
+        Key: "test.txt"
       });
     });
 
@@ -670,7 +660,7 @@ describe("toHaveReceivedCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "bar", Key: "test.txt" }));
       await s3.send(new GetObjectCommand({ Bucket: "baz", Key: "test.txt" }));
       expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
-        Bucket: "bar",
+        Bucket: "bar"
       });
     });
 
@@ -681,7 +671,7 @@ describe("toHaveReceivedCommandWith", () => {
       expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
         Bucket: "foo",
         Key: "test.txt",
-        VersionId: "abc",
+        VersionId: "abc"
       });
     });
   });
@@ -696,7 +686,7 @@ describe("toReceiveNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 2, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -707,7 +697,7 @@ describe("toReceiveNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 2, {
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -719,7 +709,7 @@ describe("toReceiveNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 2, {
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -731,7 +721,7 @@ describe("toReceiveNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 3, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -741,7 +731,7 @@ describe("toReceiveNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 2, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -754,7 +744,7 @@ describe("toReceiveNthCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
       expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 2, {
         Bucket: "bar",
-        Key: "file2.txt",
+        Key: "file2.txt"
       });
     });
 
@@ -767,7 +757,7 @@ describe("toReceiveNthCommandWith", () => {
       expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 2, {
         Bucket: "foo",
         Key: "file2.txt",
-        VersionId: "was not specified",
+        VersionId: "was not specified"
       });
     });
 
@@ -777,7 +767,7 @@ describe("toReceiveNthCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 5, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -787,7 +777,7 @@ describe("toReceiveNthCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 1, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -796,7 +786,7 @@ describe("toReceiveNthCommandWith", () => {
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 1, {
-        Bucket: "foo",
+        Bucket: "foo"
       });
     });
   });
@@ -811,7 +801,7 @@ describe("toHaveReceivedNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -822,7 +812,7 @@ describe("toHaveReceivedNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -834,7 +824,7 @@ describe("toHaveReceivedNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -846,7 +836,7 @@ describe("toHaveReceivedNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 3, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -856,7 +846,7 @@ describe("toHaveReceivedNthCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -869,7 +859,7 @@ describe("toHaveReceivedNthCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
       expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
         Bucket: "bar",
-        Key: "file2.txt",
+        Key: "file2.txt"
       });
     });
 
@@ -882,7 +872,7 @@ describe("toHaveReceivedNthCommandWith", () => {
       expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
         Bucket: "foo",
         Key: "file2.txt",
-        VersionId: "was not specified",
+        VersionId: "was not specified"
       });
     });
 
@@ -892,7 +882,7 @@ describe("toHaveReceivedNthCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 5, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -902,7 +892,7 @@ describe("toHaveReceivedNthCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 1, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -911,7 +901,7 @@ describe("toHaveReceivedNthCommandWith", () => {
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 1, {
-        Bucket: "foo",
+        Bucket: "foo"
       });
     });
   });
@@ -924,7 +914,7 @@ describe("toReceiveLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file1.txt",
+      Key: "file1.txt"
     });
   });
 
@@ -936,7 +926,7 @@ describe("toReceiveLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file3.txt",
+      Key: "file3.txt"
     });
   });
 
@@ -947,7 +937,7 @@ describe("toReceiveLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
-      Key: "file3.txt",
+      Key: "file3.txt"
     });
   });
 
@@ -959,7 +949,7 @@ describe("toReceiveLastCommandWith", () => {
     await s3.send(new GetObjectAclCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -969,7 +959,7 @@ describe("toReceiveLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file3.txt",
+      Key: "file3.txt"
     });
   });
 
@@ -981,26 +971,24 @@ describe("toReceiveLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file1.txt",
+      Key: "file1.txt"
     });
   });
 
   it.fails("should fail when not called at all", async () => {
     const s3Mock = mockClient(S3Client);
-    const s3 = new S3Client({});
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file1.txt",
+      Key: "file1.txt"
     });
   });
 
   describe("not", () => {
     it("should pass when not called", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -1011,7 +999,7 @@ describe("toReceiveLastCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -1023,7 +1011,7 @@ describe("toReceiveLastCommandWith", () => {
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
         Key: "file2.txt",
-        VersionId: "not specified",
+        VersionId: "not specified"
       });
     });
 
@@ -1034,7 +1022,7 @@ describe("toReceiveLastCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
-        Key: "file2.txt",
+        Key: "file2.txt"
       });
     });
 
@@ -1044,7 +1032,7 @@ describe("toReceiveLastCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
-        Key: "file2.txt",
+        Key: "file2.txt"
       });
     });
   });
@@ -1057,7 +1045,7 @@ describe("toHaveReceivedLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file1.txt",
+      Key: "file1.txt"
     });
   });
 
@@ -1069,7 +1057,7 @@ describe("toHaveReceivedLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file3.txt",
+      Key: "file3.txt"
     });
   });
 
@@ -1080,7 +1068,7 @@ describe("toHaveReceivedLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
-      Key: "file3.txt",
+      Key: "file3.txt"
     });
   });
 
@@ -1092,7 +1080,7 @@ describe("toHaveReceivedLastCommandWith", () => {
     await s3.send(new GetObjectAclCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file2.txt",
+      Key: "file2.txt"
     });
   });
 
@@ -1102,7 +1090,7 @@ describe("toHaveReceivedLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file3.txt",
+      Key: "file3.txt"
     });
   });
 
@@ -1114,26 +1102,24 @@ describe("toHaveReceivedLastCommandWith", () => {
     await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file3.txt" }));
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file1.txt",
+      Key: "file1.txt"
     });
   });
 
   it.fails("should fail when not called at all", async () => {
     const s3Mock = mockClient(S3Client);
-    const s3 = new S3Client({});
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
-      Key: "file1.txt",
+      Key: "file1.txt"
     });
   });
 
   describe("not", () => {
     it("should pass when not called", async () => {
       const s3Mock = mockClient(S3Client);
-      const s3 = new S3Client({});
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -1144,7 +1130,7 @@ describe("toHaveReceivedLastCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
-        Key: "file1.txt",
+        Key: "file1.txt"
       });
     });
 
@@ -1156,7 +1142,7 @@ describe("toHaveReceivedLastCommandWith", () => {
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
         Key: "file2.txt",
-        VersionId: "not specified",
+        VersionId: "not specified"
       });
     });
 
@@ -1167,7 +1153,7 @@ describe("toHaveReceivedLastCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
-        Key: "file2.txt",
+        Key: "file2.txt"
       });
     });
 
@@ -1177,7 +1163,7 @@ describe("toHaveReceivedLastCommandWith", () => {
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file1.txt" }));
       await s3.send(new GetObjectCommand({ Bucket: "foo", Key: "file2.txt" }));
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
-        Key: "file2.txt",
+        Key: "file2.txt"
       });
     });
   });

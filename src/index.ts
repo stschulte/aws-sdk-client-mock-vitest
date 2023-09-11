@@ -11,5 +11,5 @@ export {
   toReceiveNthCommandWith,
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith,
+  toHaveReceivedLastCommandWith
 } from "./matcher.js";

@@ -28,8 +28,10 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:es": "tsc -p tsconfig.es.json",
     "build:types": "tsc -p tsconfig.types.json",
+    "lint": "eslint src/**/*.ts tests/**/*.ts",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "all": "npm run lint && npm run build && npm run test:coverage"
   },
   "repository": {
     "type": "git",
@@ -46,13 +48,15 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-ec2": "^3.409.0",
-    "@aws-sdk/client-s3": "^3.409.0",
+    "@aws-sdk/client-ec2": "^3.410.0",
+    "@aws-sdk/client-s3": "^3.410.0",
     "@smithy/types": "^2.3.0",
-    "@typescript-eslint/eslint-plugin": "^6.6.0",
-    "@typescript-eslint/parser": "^6.6.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
     "@vitest/coverage-v8": "^0.34.4",
     "aws-sdk-client-mock": "^3.0.0",
+    "eslint": "^8.49.0",
+    "eslint-plugin-github": "^4.10.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.4"
   }

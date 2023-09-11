@@ -37,7 +37,7 @@ describe("ordinalOf", () => {
     [1013, "1013th"],
     [1021, "1021st"],
     [1022, "1022nd"],
-    [1023, "1023rd"],
+    [1023, "1023rd"]
   ];
   it.each(cases)("should translate %d to %s", (a, b) => {
     expect(ordinalOf(a)).toStrictEqual(b);
