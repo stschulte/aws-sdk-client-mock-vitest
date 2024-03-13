@@ -25,6 +25,7 @@ DDEPS=(
     "@typescript-eslint/parser"
     "vitest"
     "@vitest/coverage-v8"
+    "@types/node"
 )
 
 if [[ ! -f package.json ]]; then
