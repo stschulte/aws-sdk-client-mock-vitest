@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixes
+
+- Added `dist-types` to the rpm package again
+
 ## [2.1.0] - 2024-05-09
 
 ### Changed
