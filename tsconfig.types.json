@@ -6,5 +6,6 @@
     "removeComments": false,
     "strict": true,
     "declarationDir": "dist-types"
-  }
+  },
+  "include": ["src/**/*"]
 }
