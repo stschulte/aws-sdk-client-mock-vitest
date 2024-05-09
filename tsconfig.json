@@ -20,6 +20,5 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "skipLibCheck": true
-  },
-  "include": ["src/**/*"]
+  }
 }

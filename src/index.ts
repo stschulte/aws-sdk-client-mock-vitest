@@ -1,15 +1,15 @@
 export {
   CustomMatcher,
-  toReceiveCommandTimes,
-  toHaveReceivedCommandTimes,
-  toReceiveCommandOnce,
-  toHaveReceivedCommandOnce,
-  toReceiveCommand,
   toHaveReceivedCommand,
-  toReceiveCommandWith,
+  toHaveReceivedCommandOnce,
+  toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
-  toReceiveNthCommandWith,
+  toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveCommand,
+  toReceiveCommandOnce,
+  toReceiveCommandTimes,
+  toReceiveCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith
+  toReceiveNthCommandWith
 } from "./matcher.js";

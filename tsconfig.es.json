@@ -9,6 +9,7 @@
     "strict": true,
     "outDir": "dist-es",
     "declaration": true,
-    "declarationDir": "./dist-types/esm"
-  }
+    "declarationDir": "./dist-types/esm",
+  },
+  "include": ["src/**/*"]
 }

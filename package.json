@@ -5,11 +5,9 @@
   "type": "module",
   "module": "./dist-es/index.js",
   "main": "./dist-cjs/index.js",
-  "types": "./dist-types/index.d.ts",
   "files": [
     "./dist-cjs",
-    "./dist-es",
-    "./dist-types"
+    "./dist-es"
   ],
   "exports": {
     ".": {
@@ -24,11 +22,11 @@
     }
   },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:es && npm run build:types",
+    "build": "npm run build:cjs && npm run build:es",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:es": "tsc -p tsconfig.es.json",
-    "build:types": "tsc -p tsconfig.types.json",
-    "lint": "eslint src/**/*.ts tests/**/*.ts",
+    "lint": "eslint -c ./eslint.config.js .",
+    "lint:fix": "eslint -c ./eslint.config.js --fix .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "all": "npm run lint && npm run build && npm run test:coverage"
@@ -44,21 +42,22 @@
   },
   "homepage": "https://github.com/stschulte/aws-sdk-client-mock-vitest#readme",
   "dependencies": {
-    "@vitest/expect": "^1.3.1",
+    "@vitest/expect": "^1.6.0",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-ec2": "^3.533.0",
-    "@aws-sdk/client-s3": "^3.533.0",
-    "@smithy/types": "^2.11.0",
-    "@types/node": "^20.11.27",
-    "@typescript-eslint/eslint-plugin": "^7.2.0",
-    "@typescript-eslint/parser": "^7.2.0",
-    "@vitest/coverage-v8": "^1.3.1",
-    "aws-sdk-client-mock": "^3.0.1",
+    "@aws-sdk/client-ec2": "^3.572.0",
+    "@aws-sdk/client-s3": "^3.572.0",
+    "@eslint/js": "^9.2.0",
+    "@smithy/types": "^2.12.0",
+    "@types/node": "^20.12.11",
+    "@vitest/coverage-v8": "^1.6.0",
+    "aws-sdk-client-mock": "^4.0.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-github": "^4.10.2",
-    "typescript": "^5.4.2",
-    "vitest": "^1.3.1"
+    "eslint-config-flat-gitignore": "^0.1.5",
+    "eslint-plugin-perfectionist": "^2.10.0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.8.0",
+    "vitest": "^1.6.0"
   }
 }

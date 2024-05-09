@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import { notNull, ordinalOf } from "../src/utils";
+import { notNull, ordinalOf } from "../src/utils.js";
 
 describe("notNull", () => {
   it("should return true when not null", () => {

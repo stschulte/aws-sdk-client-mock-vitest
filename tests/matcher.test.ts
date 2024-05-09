@@ -1,4 +1,3 @@
-import { mockClient } from "aws-sdk-client-mock";
 import {
   GetBucketAclCommand,
   GetObjectAclCommand,
@@ -6,36 +5,37 @@ import {
   PutObjectCommand,
   S3Client
 } from "@aws-sdk/client-s3";
-import { describe, it, expect } from "vitest";
+import { mockClient } from "aws-sdk-client-mock";
+import { describe, expect, it } from "vitest";
 
 import {
-  toReceiveCommandTimes,
-  toHaveReceivedCommandTimes,
-  toReceiveCommandOnce,
-  toHaveReceivedCommandOnce,
-  toReceiveCommand,
   toHaveReceivedCommand,
-  toReceiveCommandWith,
+  toHaveReceivedCommandOnce,
+  toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
-  toReceiveNthCommandWith,
+  toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveCommand,
+  toReceiveCommandOnce,
+  toReceiveCommandTimes,
+  toReceiveCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith
-} from "../src/matcher";
+  toReceiveNthCommandWith
+} from "../src/matcher.js";
 
 expect.extend({
-  toReceiveCommandTimes,
-  toHaveReceivedCommandTimes,
-  toReceiveCommandOnce,
-  toHaveReceivedCommandOnce,
-  toReceiveCommand,
   toHaveReceivedCommand,
-  toReceiveCommandWith,
+  toHaveReceivedCommandOnce,
+  toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
-  toReceiveNthCommandWith,
+  toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveCommand,
+  toReceiveCommandOnce,
+  toReceiveCommandTimes,
+  toReceiveCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith
+  toReceiveNthCommandWith
 });
 
 describe("toReceiveCommandTimes", () => {

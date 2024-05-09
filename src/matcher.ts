@@ -1,10 +1,12 @@
 import type { AwsCommand, AwsStub } from "aws-sdk-client-mock";
-import {
-  MatcherState,
-  ObjectContaining,
-  ExpectationResult
-} from "@vitest/expect";
+
 import { MetadataBearer } from "@smithy/types";
+import {
+  ExpectationResult,
+  MatcherState,
+  ObjectContaining
+} from "@vitest/expect";
+
 import { notNull, ordinalOf } from "./utils.js";
 
 type AwsCommandConstructur<
@@ -33,12 +35,8 @@ type CustomMatcherFn = (this: MatcherState, ...args: any) => ExpectationResult;
  * for reference
  */
 interface BaseMatcher<R> {
-  toHaveReceivedCommandTimes<
-    Input extends object,
-    Ouptut extends MetadataBearer
-  >(
-    command: AwsCommandConstructur<Input, Ouptut>,
-    times: number
+  toHaveReceivedCommand<Input extends object, Ouptut extends MetadataBearer>(
+    command: AwsCommandConstructur<Input, Ouptut>
   ): R;
 
   toHaveReceivedCommandOnce<
@@ -48,11 +46,23 @@ interface BaseMatcher<R> {
     command: AwsCommandConstructur<Input, Ouptut>
   ): R;
 
-  toHaveReceivedCommand<Input extends object, Ouptut extends MetadataBearer>(
-    command: AwsCommandConstructur<Input, Ouptut>
+  toHaveReceivedCommandTimes<
+    Input extends object,
+    Ouptut extends MetadataBearer
+  >(
+    command: AwsCommandConstructur<Input, Ouptut>,
+    times: number
   ): R;
 
   toHaveReceivedCommandWith<
+    Input extends object,
+    Ouptut extends MetadataBearer
+  >(
+    command: AwsCommandConstructur<Input, Ouptut>,
+    input: Partial<Input>
+  ): R;
+
+  toHaveReceivedLastCommandWith<
     Input extends object,
     Ouptut extends MetadataBearer
   >(
@@ -68,29 +78,21 @@ interface BaseMatcher<R> {
     times: number,
     input: Partial<Input>
   ): R;
-
-  toHaveReceivedLastCommandWith<
-    Input extends object,
-    Ouptut extends MetadataBearer
-  >(
-    command: AwsCommandConstructur<Input, Ouptut>,
-    input: Partial<Input>
-  ): R;
 }
 
 /**
  * We define some aliases
  */
 interface AliasMatcher<R> {
-  toReceiveCommandTimes: BaseMatcher<R>["toHaveReceivedCommandTimes"];
-  toReceiveCommandOnce: BaseMatcher<R>["toHaveReceivedCommandOnce"];
   toReceiveCommand: BaseMatcher<R>["toHaveReceivedCommand"];
+  toReceiveCommandOnce: BaseMatcher<R>["toHaveReceivedCommandOnce"];
+  toReceiveCommandTimes: BaseMatcher<R>["toHaveReceivedCommandTimes"];
   toReceiveCommandWith: BaseMatcher<R>["toHaveReceivedCommandWith"];
-  toReceiveNthCommandWith: BaseMatcher<R>["toHaveReceivedNthCommandWith"];
   toReceiveLastCommandWith: BaseMatcher<R>["toHaveReceivedLastCommandWith"];
+  toReceiveNthCommandWith: BaseMatcher<R>["toHaveReceivedNthCommandWith"];
 }
 
-type CustomMatcher<R = unknown> = BaseMatcher<R> & AliasMatcher<R>;
+type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
 
 function formatCalls(
   context: MatcherState,
@@ -139,13 +141,13 @@ const toHaveReceivedCommandTimes: CustomMatcherFn = function (
   const pass = callCount === times;
 
   return {
-    pass,
     message: () => {
       const message = isNot
         ? `expected "${command.name}" to not be called ${times} times`
         : `expected "${command.name}" to be called ${times} times, but got ${callCount} times`;
       return formatCalls(this, client, command, undefined, message);
-    }
+    },
+    pass
   };
 };
 const toReceiveCommandTimes = toHaveReceivedCommandTimes;
@@ -158,13 +160,13 @@ const toHaveReceivedCommandOnce: CustomMatcherFn = function (
   const callCount = client.commandCalls(command).length;
   const pass = callCount === 1;
   return {
-    pass,
     message: () => {
       const message = isNot
         ? `expected "${command.name}" to not be called once`
         : `expected "${command.name}" to be called once, but got ${callCount} times`;
       return formatCalls(this, client, command, undefined, message);
-    }
+    },
+    pass
   };
 };
 const toReceiveCommandOnce = toHaveReceivedCommandOnce;
@@ -177,13 +179,13 @@ const toHaveReceivedCommand: CustomMatcherFn = function (
   const callCount = client.commandCalls(command).length;
   const pass = callCount >= 1;
   return {
-    pass,
     message: () => {
       const message = isNot
         ? `expected "${command.name}" to not be called at all, but actually been called ${callCount} times`
         : `expected "${command.name}" to be called at least once`;
       return formatCalls(this, client, command, undefined, message);
-    }
+    },
+    pass
   };
 };
 const toReceiveCommand = toHaveReceivedCommand;
@@ -201,7 +203,6 @@ const toHaveReceivedCommandWith: CustomMatcherFn = function (
   );
 
   return {
-    pass,
     message: () => {
       const message = isNot
         ? `expected "${
@@ -211,7 +212,8 @@ const toHaveReceivedCommandWith: CustomMatcherFn = function (
             command.name
           }" to be called with arguments: ${utils.printExpected(input)}`;
       return formatCalls(this, client, command, input, message);
-    }
+    },
+    pass
   };
 };
 const toReceiveCommandWith = toHaveReceivedCommandWith;
@@ -233,7 +235,6 @@ const toHaveReceivedNthCommandWith: CustomMatcherFn = function (
     : false;
 
   return {
-    pass,
     message: () => {
       const message = isNot
         ? `expected ${ordinalOf(times)} "${
@@ -243,7 +244,8 @@ const toHaveReceivedNthCommandWith: CustomMatcherFn = function (
             command.name
           }" to be called with arguments: ${utils.printExpected(input)}`;
       return formatCalls(this, client, command, input, message);
-    }
+    },
+    pass
   };
 };
 const toReceiveNthCommandWith = toHaveReceivedNthCommandWith;
@@ -279,16 +281,16 @@ const toReceiveLastCommandWith = toHaveReceivedLastCommandWith;
 
 export {
   CustomMatcher,
-  toReceiveCommandTimes,
-  toHaveReceivedCommandTimes,
-  toReceiveCommandOnce,
-  toHaveReceivedCommandOnce,
-  toReceiveCommand,
   toHaveReceivedCommand,
-  toReceiveCommandWith,
+  toHaveReceivedCommandOnce,
+  toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
-  toReceiveNthCommandWith,
+  toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveCommand,
+  toReceiveCommandOnce,
+  toReceiveCommandTimes,
+  toReceiveCommandWith,
   toReceiveLastCommandWith,
-  toHaveReceivedLastCommandWith
+  toReceiveNthCommandWith
 };
