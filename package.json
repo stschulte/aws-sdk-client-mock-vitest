@@ -5,6 +5,7 @@
   "type": "module",
   "module": "./dist-es/index.js",
   "main": "./dist-cjs/index.js",
+  "types": "./dist-types/index.d.ts",
   "files": [
     "./dist-cjs",
     "./dist-es",
@@ -23,9 +24,10 @@
     }
   },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:es",
+    "build": "npm run build:cjs && npm run build:es && npm run build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:es": "tsc -p tsconfig.es.json",
+    "build:types": "tsc -p tsconfig.types.json",
     "lint": "eslint -c ./eslint.config.js .",
     "lint:fix": "eslint -c ./eslint.config.js --fix .",
     "test": "vitest run",

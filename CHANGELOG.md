@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Fixes
+
+- Fix type parameter in `package.json`
+
 ## [2.1.1] - 2024-05-09
 
 ### Fixes
