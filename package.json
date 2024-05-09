@@ -1,6 +1,6 @@
 {
   "name": "aws-sdk-client-mock-vitest",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Custom matchers for AWS SDK Client mock to be used in vitest",
   "type": "module",
   "module": "./dist-es/index.js",
