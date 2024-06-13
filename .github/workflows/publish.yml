@@ -1,0 +1,47 @@
+name: "Publish Module"
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+
+jobs:
+  release:
+    name: Release Module
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout
+        uses: "actions/checkout@v4"
+        with:
+          ref: "${{ github.ref }}"
+          clean: true
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Get metadata
+        id: metadata
+        run: |
+          metadata_version=$(jq --raw-output .version package.json)
+          tag="v${metadata_version}"
+          echo "tag=${tag}" >> $GITHUB_OUTPUT
+          echo "version=${metadata_version}" >> $GITHUB_OUTPUT
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
