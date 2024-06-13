@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Switch to ESM module only (you cannot require anymore)
+
 ## [2.1.3] - 2024-05-09
 
 ## Fixes

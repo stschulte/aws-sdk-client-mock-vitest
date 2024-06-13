@@ -35,7 +35,7 @@ if [[ ! -f package.json ]]; then
 fi
 
 echo "Cleanup"
-rm -rf node_modules package-lock.json aws-sdk-client-mock-vitest-*.tgz coverage dist-cjs dist-es dist-types
+rm -rf node_modules package-lock.json aws-sdk-client-mock-vitest-*.tgz coverage dist
 sed -i \
   -e '/^  "dependencies"/,/^  \}/D' \
   -e '/^  "devDependencies"/,/^  \}/D' \

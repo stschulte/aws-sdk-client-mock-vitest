@@ -1,5 +1,5 @@
+export type { CustomMatcher } from './matcher.js'
 export {
-  CustomMatcher,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
