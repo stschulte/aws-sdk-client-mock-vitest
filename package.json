@@ -34,22 +34,22 @@
   },
   "homepage": "https://github.com/stschulte/aws-sdk-client-mock-vitest#readme",
   "dependencies": {
-    "@vitest/expect": "^1.6.0",
+    "@vitest/expect": "^2.0.1",
     "tslib": "^2.6.3"
   },
   "devDependencies": {
-    "@aws-sdk/client-ec2": "^3.596.0",
-    "@aws-sdk/client-s3": "^3.596.0",
-    "@eslint/js": "^9.4.0",
-    "@smithy/types": "^3.1.0",
-    "@types/node": "^20.14.2",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@aws-sdk/client-ec2": "^3.609.0",
+    "@aws-sdk/client-s3": "^3.609.0",
+    "@eslint/js": "^9.6.0",
+    "@smithy/types": "^3.3.0",
+    "@types/node": "^20.14.10",
+    "@vitest/coverage-v8": "^2.0.1",
     "aws-sdk-client-mock": "^4.0.1",
     "eslint": "^8.57.0",
-    "eslint-config-flat-gitignore": "^0.1.5",
+    "eslint-config-flat-gitignore": "^0.1.6",
     "eslint-plugin-perfectionist": "^2.11.0",
-    "typescript": "^5.4.5",
-    "typescript-eslint": "^7.13.0",
-    "vitest": "^1.6.0"
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.16.0",
+    "vitest": "^2.0.1"
   }
 }

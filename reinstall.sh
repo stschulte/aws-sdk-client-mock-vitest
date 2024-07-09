@@ -5,7 +5,7 @@
 # Small script to freshly start over installing all
 # dependencies.
 #
-# Can you be used to upgrade all dependencies, so be
+# Can be used to upgrade all dependencies, so be
 # carefull executing this.
 set -e
 
@@ -35,12 +35,16 @@ if [[ ! -f package.json ]]; then
 fi
 
 echo "Cleanup"
-rm -rf node_modules package-lock.json aws-sdk-client-mock-vitest-*.tgz coverage dist
-sed -i \
-  -e '/^  "dependencies"/,/^  \}/D' \
-  -e '/^  "devDependencies"/,/^  \}/D' \
-  -e 's/^\(  "homepage".*\),$/\1/' \
-  package.json
+rm -rf node_modules
+rm -rf package-lock.json
+rm -rf *.tgz coverage dist
+rm -rf dist
+
+echo "Replacing package.json without dependencies"
+NEW_PACKAGE_JSON=`mktemp package.json.XXXXXXXXXX`
+chmod 0644 "$NEW_PACKAGE_JSON"
+jq 'del(.dependencies, .devDependencies)' package.json > "$NEW_PACKAGE_JSON"
+mv "$NEW_PACKAGE_JSON" package.json
 
 
 echo ">> Installing dependencies"
@@ -54,5 +58,11 @@ for PKG in "${DDEPS[@]}"; do
   echo " * ${PKG}"
 done
 npm install --save-dev "${DDEPS[@]}"
-
 echo ">> DONE"
+
+echo ""
+echo "We reinstalled all dependencies. You may want to run"
+echo ""
+echo "    git diff package.json"
+echo ""
+echo "now"
