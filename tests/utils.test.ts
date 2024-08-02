@@ -17,7 +17,7 @@ describe("notNull", () => {
 });
 
 describe("ordinalOf", () => {
-  const cases: Array<[number, string]> = [
+  const cases: [number, string][] = [
     [1, "1st"],
     [2, "2nd"],
     [3, "3rd"],

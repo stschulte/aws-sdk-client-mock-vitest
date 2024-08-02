@@ -1,23 +1,27 @@
 import eslint from "@eslint/js";
 import gitignore from "eslint-config-flat-gitignore";
-import perfectionistNatural from 'eslint-plugin-perfectionist/configs/recommended-natural'
+import perfectionist from 'eslint-plugin-perfectionist'
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   gitignore(),
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {
       parserOptions: {
-        ecmaVersion: "latest",
-        project: "./tsconfig.json",
-        sourceType: "module",
-      },
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      }
     },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
-  perfectionistNatural
+  {
+    // disable type-aware linting on JS files
+    files: ['**/*.js'],
+    ...tseslint.configs.disableTypeChecked,
+  },
+  perfectionist.configs["recommended-natural"]
 );

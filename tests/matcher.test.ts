@@ -39,7 +39,7 @@ expect.extend({
 });
 
 describe("toReceiveCommandTimes", () => {
-  it("should pass with 0 received commands", async () => {
+  it("should pass with 0 received commands", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toReceiveCommandTimes(PutObjectCommand, 0);
   });
@@ -67,7 +67,7 @@ describe("toReceiveCommandTimes", () => {
   });
 
   describe("not", () => {
-    it("should pass when not called", async () => {
+    it("should pass when not called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommandTimes(PutObjectCommand, 1);
     });
@@ -89,7 +89,7 @@ describe("toReceiveCommandTimes", () => {
 });
 
 describe("toHaveReceivedCommandTimes", () => {
-  it("should pass with 0 received commands", async () => {
+  it("should pass with 0 received commands", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
   });
@@ -117,7 +117,7 @@ describe("toHaveReceivedCommandTimes", () => {
   });
 
   describe("not", () => {
-    it("should pass when not called", async () => {
+    it("should pass when not called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommandTimes(PutObjectCommand, 1);
     });
@@ -146,7 +146,7 @@ describe("toReceiveCommandOnce", () => {
     expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
   });
 
-  it.fails("should fail when not called", async () => {
+  it.fails("should fail when not called", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
   });
@@ -169,7 +169,7 @@ describe("toReceiveCommandOnce", () => {
   });
 
   describe("not", () => {
-    it("should pass when not called", async () => {
+    it("should pass when not called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommandOnce(GetObjectCommand);
     });
@@ -205,7 +205,7 @@ describe("toHaveReceivedCommandOnce", () => {
     expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
   });
 
-  it.fails("should fail when not called", async () => {
+  it.fails("should fail when not called", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
   });
@@ -228,7 +228,7 @@ describe("toHaveReceivedCommandOnce", () => {
   });
 
   describe("not", () => {
-    it("should pass when not called", async () => {
+    it("should pass when not called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommandOnce(GetObjectCommand);
     });
@@ -258,7 +258,7 @@ describe("toHaveReceivedCommandOnce", () => {
 });
 
 describe("toReceiveCommand", () => {
-  it.fails("should fail when no command received", async () => {
+  it.fails("should fail when no command received", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toReceiveCommand(GetObjectCommand);
   });
@@ -286,7 +286,7 @@ describe("toReceiveCommand", () => {
   });
 
   describe("not", () => {
-    it("should pass when no command received", async () => {
+    it("should pass when no command received", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
     });
@@ -316,7 +316,7 @@ describe("toReceiveCommand", () => {
 });
 
 describe("toHaveReceivedCommand", () => {
-  it.fails("should fail when no command received", async () => {
+  it.fails("should fail when no command received", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
   });
@@ -344,7 +344,7 @@ describe("toHaveReceivedCommand", () => {
   });
 
   describe("not", () => {
-    it("should pass when no command received", async () => {
+    it("should pass when no command received", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
     });
@@ -471,7 +471,7 @@ describe("toReceiveCommandWith", () => {
   });
 
   describe("not", () => {
-    it("shoud pass when never called", async () => {
+    it("shoud pass when never called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommandWith(PutObjectCommand, {
         Bucket: "foo",
@@ -623,7 +623,7 @@ describe("toHaveReceivedCommandWith", () => {
   });
 
   describe("not", () => {
-    it("shoud pass when never called", async () => {
+    it("shoud pass when never called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommandWith(PutObjectCommand, {
         Bucket: "foo",
@@ -975,7 +975,7 @@ describe("toReceiveLastCommandWith", () => {
     });
   });
 
-  it.fails("should fail when not called at all", async () => {
+  it.fails("should fail when not called at all", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
@@ -984,7 +984,7 @@ describe("toReceiveLastCommandWith", () => {
   });
 
   describe("not", () => {
-    it("should pass when not called", async () => {
+    it("should pass when not called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
         Bucket: "foo",
@@ -1106,7 +1106,7 @@ describe("toHaveReceivedLastCommandWith", () => {
     });
   });
 
-  it.fails("should fail when not called at all", async () => {
+  it.fails("should fail when not called at all", () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
       Bucket: "foo",
@@ -1115,7 +1115,7 @@ describe("toHaveReceivedLastCommandWith", () => {
   });
 
   describe("not", () => {
-    it("should pass when not called", async () => {
+    it("should pass when not called", () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Bucket: "foo",

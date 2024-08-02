@@ -111,6 +111,7 @@ function formatCalls(
       "Received:",
       "",
       ...calls.flatMap((call, index) => {
+        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
         const input = call.args[0].input;
         return [
           `   ${ordinalOf(index + 1)} ${command.name} call`,
@@ -125,7 +126,7 @@ function formatCalls(
           ""
         ].filter(notNull);
       }),
-      `Number of calls: ${calls.length}`
+      `Number of calls: ${calls.length.toString()}`
     ].join("\n");
 }
 
@@ -141,8 +142,8 @@ const toHaveReceivedCommandTimes: CustomMatcherFn = function(
   return {
     message: () => {
       const message = isNot
-        ? `expected "${command.name}" to not be called ${times} times`
-        : `expected "${command.name}" to be called ${times} times, but got ${callCount} times`;
+        ? `expected "${command.name}" to not be called ${times.toString()} times`
+        : `expected "${command.name}" to be called ${times.toString()} times, but got ${callCount.toString()} times`;
       return formatCalls(this, client, command, undefined, message);
     },
     pass
@@ -161,7 +162,7 @@ const toHaveReceivedCommandOnce: CustomMatcherFn = function(
     message: () => {
       const message = isNot
         ? `expected "${command.name}" to not be called once`
-        : `expected "${command.name}" to be called once, but got ${callCount} times`;
+        : `expected "${command.name}" to be called once, but got ${callCount.toString()} times`;
       return formatCalls(this, client, command, undefined, message);
     },
     pass
@@ -179,7 +180,7 @@ const toHaveReceivedCommand: CustomMatcherFn = function(
   return {
     message: () => {
       const message = isNot
-        ? `expected "${command.name}" to not be called at all, but actually been called ${callCount} times`
+        ? `expected "${command.name}" to not be called at all, but actually been called ${callCount.toString()} times`
         : `expected "${command.name}" to be called at least once`;
       return formatCalls(this, client, command, undefined, message);
     },
