@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Build package under Node 22 environment
+- Bump `@vitest/expect` dependency from `^2.0.1` to `^2.0.5`
+
 ## [4.0.0] - 2024-07-09
 
 ### Changed
@@ -35,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixes
 
-- Added `dist-types` to the rpm package again
+- Added `dist-types` to the npm package again
 
 ## [2.1.0] - 2024-05-09
 
