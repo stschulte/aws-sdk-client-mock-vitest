@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from 'vitest';
 
 import {
   toHaveReceivedCommand,
@@ -12,10 +12,10 @@ import {
   toReceiveCommandTimes,
   toReceiveCommandWith,
   toReceiveLastCommandWith,
-  toReceiveNthCommandWith
-} from "../src/index.js";
+  toReceiveNthCommandWith,
+} from '../src/index.js';
 
-it("should be able to extend with matchers", () => {
+it('should be able to extend with matchers', () => {
   expect.extend({
     toHaveReceivedCommand,
     toHaveReceivedCommandOnce,
@@ -28,6 +28,6 @@ it("should be able to extend with matchers", () => {
     toReceiveCommandTimes,
     toReceiveCommandWith,
     toReceiveLastCommandWith,
-    toReceiveNthCommandWith
+    toReceiveNthCommandWith,
   });
 });

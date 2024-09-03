@@ -1,4 +1,4 @@
-export type { CustomMatcher } from './matcher.js'
+export type { CustomMatcher } from './matcher.js';
 export {
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
@@ -11,5 +11,5 @@ export {
   toReceiveCommandTimes,
   toReceiveCommandWith,
   toReceiveLastCommandWith,
-  toReceiveNthCommandWith
-} from "./matcher.js";
+  toReceiveNthCommandWith,
+} from './matcher.js';
