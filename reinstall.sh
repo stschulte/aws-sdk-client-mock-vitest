@@ -19,11 +19,14 @@ DDEPS=(
     "@aws-sdk/client-ec2"
     "@aws-sdk/client-s3"
     "@smithy/types"
+
     "eslint"
     "@eslint/js"
     "eslint-config-flat-gitignore"
     "eslint-plugin-perfectionist"
+    "@stylistic/eslint-plugin"
     "typescript-eslint"
+
     "vitest"
     "@vitest/coverage-v8"
     "@types/node"
