@@ -1,5 +1,6 @@
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
+import vitest from '@vitest/eslint-plugin';
 import gitignore from 'eslint-config-flat-gitignore';
 import perfectionist from 'eslint-plugin-perfectionist';
 import tseslint from 'typescript-eslint';
@@ -30,4 +31,11 @@ export default tseslint.config(
     quotes: 'single',
     semi: true,
   }),
+  {
+    files: ['tests/**/*.ts'],
+    plugins: { vitest },
+    rules: {
+      ...vitest.configs.recommended.rules,
+    },
+  },
 );

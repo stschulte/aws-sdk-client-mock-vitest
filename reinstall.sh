@@ -22,10 +22,12 @@ DDEPS=(
 
     "eslint"
     "@eslint/js"
+    "@types/eslint__js"
     "eslint-config-flat-gitignore"
     "eslint-plugin-perfectionist"
     "@stylistic/eslint-plugin"
     "typescript-eslint"
+    "@vitest/eslint-plugin"
 
     "vitest"
     "@vitest/coverage-v8"

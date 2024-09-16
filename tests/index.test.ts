@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   toHaveReceivedCommand,
@@ -15,19 +15,36 @@ import {
   toReceiveNthCommandWith,
 } from '../src/index.js';
 
-it('should be able to extend with matchers', () => {
-  expect.extend({
-    toHaveReceivedCommand,
-    toHaveReceivedCommandOnce,
-    toHaveReceivedCommandTimes,
-    toHaveReceivedCommandWith,
-    toHaveReceivedLastCommandWith,
-    toHaveReceivedNthCommandWith,
-    toReceiveCommand,
-    toReceiveCommandOnce,
-    toReceiveCommandTimes,
-    toReceiveCommandWith,
-    toReceiveLastCommandWith,
-    toReceiveNthCommandWith,
+expect.extend({
+  toHaveReceivedCommand,
+  toHaveReceivedCommandOnce,
+  toHaveReceivedCommandTimes,
+  toHaveReceivedCommandWith,
+  toHaveReceivedLastCommandWith,
+  toHaveReceivedNthCommandWith,
+  toReceiveCommand,
+  toReceiveCommandOnce,
+  toReceiveCommandTimes,
+  toReceiveCommandWith,
+  toReceiveLastCommandWith,
+  toReceiveNthCommandWith,
+});
+
+describe('aws-sdk-client-mock-vitest', () => {
+  it.each([
+    'toHaveReceivedCommand',
+    'toHaveReceivedCommandOnce',
+    'toHaveReceivedCommandTimes',
+    'toHaveReceivedCommandWith',
+    'toHaveReceivedLastCommandWith',
+    'toHaveReceivedNthCommandWith',
+    'toReceiveCommand',
+    'toReceiveCommandOnce',
+    'toReceiveCommandTimes',
+    'toReceiveCommandWith',
+    'toReceiveLastCommandWith',
+    'toReceiveNthCommandWith',
+  ])('should be able to extend with %s', (matcher) => {
+    expect(expect('something')).toHaveProperty(matcher);
   });
 });
