@@ -12,13 +12,14 @@ set -e
 DEPS=(
   "@vitest/expect"
   "tslib"
+
+  "aws-sdk-client-mock"
+  "@smithy/types"
 )
 DDEPS=(
     "typescript"
-    "aws-sdk-client-mock"
     "@aws-sdk/client-ec2"
     "@aws-sdk/client-s3"
-    "@smithy/types"
 
     "eslint"
     "@eslint/js"

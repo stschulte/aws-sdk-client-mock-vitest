@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Build package under Node 22 environment
-- Bump `@vitest/expect` dependency from `^2.0.1` to `^2.0.5`
+- Bump `@vitest/expect` dependency from `^2.0.1` to `^2.1.3`
 
 ## [4.0.0] - 2024-07-09
 
