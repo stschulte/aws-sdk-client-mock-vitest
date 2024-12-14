@@ -9,12 +9,14 @@ import { mockClient } from 'aws-sdk-client-mock';
 import { describe, expect, it } from 'vitest';
 
 import {
+  toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
   toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveAnyCommand,
   toReceiveCommand,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
@@ -24,12 +26,14 @@ import {
 } from '../src/matcher.js';
 
 expect.extend({
+  toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
   toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveAnyCommand,
   toReceiveCommand,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
@@ -1165,6 +1169,80 @@ describe('toHaveReceivedLastCommandWith', () => {
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Key: 'file2.txt',
       });
+    });
+  });
+});
+
+describe('toReceiveAnyCommand', () => {
+  it.fails('fails when no command received', () => {
+    const s3Mock = mockClient(S3Client);
+    expect(s3Mock).toReceiveAnyCommand();
+  });
+
+  it('passes when one command was received', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
+    expect(s3Mock).toReceiveAnyCommand();
+  });
+
+  describe('not', () => {
+    it('passes when no command received', () => {
+      const s3Mock = mockClient(S3Client);
+      expect(s3Mock).not.toReceiveAnyCommand();
+    });
+
+    it.fails('fails when one command was received', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
+      expect(s3Mock).not.toReceiveAnyCommand();
+    });
+
+    it.fails('fails when multiple commands were received', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
+      await s3.send(new GetObjectAclCommand({ Bucket: 'foo', Key: 'file3.txt' }));
+      expect(s3Mock).not.toReceiveAnyCommand();
+    });
+  });
+});
+
+describe('toHaveReceivedAnyCommand', () => {
+  it.fails('fails when no command received', () => {
+    const s3Mock = mockClient(S3Client);
+    expect(s3Mock).toHaveReceivedAnyCommand();
+  });
+
+  it('passes when one command was received', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
+    expect(s3Mock).toHaveReceivedAnyCommand();
+  });
+
+  describe('not', () => {
+    it('passes when no command received', () => {
+      const s3Mock = mockClient(S3Client);
+      expect(s3Mock).not.toHaveReceivedAnyCommand();
+    });
+
+    it.fails('fails when one command was received', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
+      expect(s3Mock).not.toHaveReceivedAnyCommand();
+    });
+
+    it.fails('fails when multiple commands were received', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
+      await s3.send(new GetObjectAclCommand({ Bucket: 'foo', Key: 'file3.txt' }));
+      expect(s3Mock).not.toHaveReceivedAnyCommand();
     });
   });
 });

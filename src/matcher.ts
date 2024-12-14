@@ -13,6 +13,7 @@ import { notNull, ordinalOf } from './utils.js';
  * We define some aliases
  */
 interface AliasMatcher<R> {
+  toReceiveAnyCommand: BaseMatcher<R>['toHaveReceivedAnyCommand'];
   toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
   toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
   toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
@@ -32,6 +33,8 @@ type AwsCommandConstructur<
  * for reference
  */
 interface BaseMatcher<R> {
+  toHaveReceivedAnyCommand(): R;
+
   toHaveReceivedCommand<Input extends object, Ouptut extends MetadataBearer>(
     command: AwsCommandConstructur<Input, Ouptut>
   ): R;
@@ -82,11 +85,12 @@ type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
 function formatCalls(
   context: MatcherState,
   client: AwsStub<any, any, any>,
-  command: AwsCommandConstructur<any, any>,
+  command: AwsCommandConstructur<any, any> | undefined,
   expectedCall: Record<string, any> | undefined,
   message: string,
 ): string {
-  const calls = client.commandCalls(command);
+  const clientName = client.clientName();
+  const calls = command ? client.commandCalls(command) : client.calls();
 
   return calls.length === 0
     ? message
@@ -96,10 +100,14 @@ function formatCalls(
         'Received:',
         '',
         ...calls.flatMap((call, index) => {
-        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-          const input = call.args[0].input;
+          const arg = call.args[0];
+          const name = command?.name ?? `${clientName} with ${arg.constructor.name}`;
+
+          /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+          const input = arg.input;
+
           return [
-            `   ${ordinalOf(index + 1)} ${command.name} call`,
+            `   ${ordinalOf(index + 1)} ${name} call`,
             '',
             expectedCall
               ? context.utils.diff(expectedCall, input, { omitAnnotationLines: true })
@@ -257,14 +265,36 @@ function toHaveReceivedLastCommandWith(
 };
 const toReceiveLastCommandWith = toHaveReceivedLastCommandWith;
 
+function toHaveReceivedAnyCommand(
+  this: MatcherState,
+  client: AwsStub<any, any, any>,
+) {
+  const { isNot } = this;
+  const calls = client.calls();
+  const pass = calls.length > 0;
+
+  return {
+    message: () => {
+      const message = isNot
+        ? `expected client "${client.clientName()}" to not receive any calls, but was called`
+        : `expected client "${client.clientName()}" to have been called, but was not called`;
+      return formatCalls(this, client, undefined, undefined, message);
+    },
+    pass,
+  };
+}
+const toReceiveAnyCommand = toHaveReceivedAnyCommand;
+
 export type { CustomMatcher };
 export {
+  toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
   toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveAnyCommand,
   toReceiveCommand,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
