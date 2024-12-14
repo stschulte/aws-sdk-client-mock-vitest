@@ -9,25 +9,22 @@ import { ObjectContaining } from '@vitest/expect';
 
 import { notNull, ordinalOf } from './utils.js';
 
+/**
+ * We define some aliases
+ */
+interface AliasMatcher<R> {
+  toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
+  toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
+  toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
+  toReceiveCommandWith: BaseMatcher<R>['toHaveReceivedCommandWith'];
+  toReceiveLastCommandWith: BaseMatcher<R>['toHaveReceivedLastCommandWith'];
+  toReceiveNthCommandWith: BaseMatcher<R>['toHaveReceivedNthCommandWith'];
+}
+
 type AwsCommandConstructur<
   Input extends object,
   Output extends MetadataBearer,
 > = new (input: Input) => AwsCommand<Input, Output>;
-
-/*
-  unfortunately RawMatcherFn from @vitest/expect defines a matcher like this
-
-      (this: T, received: any, expected: any, options?: any): ExpectationResult;
-
-  this does not work in our case since we may get multiple values for expected,
-  e.g.
-
-      toHaveReceivedNthCommandWith(PutObjectCommand, 2, {
-        Bucket: "foo",
-        Key: "test2.txt",
-      });
-*/
-type CustomMatcherFn = (this: MatcherState, ...args: any) => ExpectationResult;
 
 /**
  * This defines our matchers as they can be used in actual tests, see
@@ -80,19 +77,22 @@ interface BaseMatcher<R> {
   ): R;
 }
 
-/**
- * We define some aliases
- */
-interface AliasMatcher<R> {
-  toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
-  toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
-  toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
-  toReceiveCommandWith: BaseMatcher<R>['toHaveReceivedCommandWith'];
-  toReceiveLastCommandWith: BaseMatcher<R>['toHaveReceivedLastCommandWith'];
-  toReceiveNthCommandWith: BaseMatcher<R>['toHaveReceivedNthCommandWith'];
-}
-
 type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
+
+/*
+  unfortunately RawMatcherFn from @vitest/expect defines a matcher like this
+
+      (this: T, received: any, expected: any, options?: any): ExpectationResult;
+
+  this does not work in our case since we may get multiple values for expected,
+  e.g.
+
+      toHaveReceivedNthCommandWith(PutObjectCommand, 2, {
+        Bucket: "foo",
+        Key: "test2.txt",
+      });
+*/
+type CustomMatcherFn = (this: MatcherState, ...args: any) => ExpectationResult;
 
 function formatCalls(
   context: MatcherState,
@@ -119,10 +119,10 @@ function formatCalls(
             expectedCall
               ? context.utils.diff(expectedCall, input, { omitAnnotationLines: true })
               : context.utils
-                .stringify(input)
-                .split('\n')
-                .map(line => `    ${line}`)
-                .join('\n'),
+                  .stringify(input)
+                  .split('\n')
+                  .map(line => `    ${line}`)
+                  .join('\n'),
             '',
           ].filter(notNull);
         }),
