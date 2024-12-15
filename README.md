@@ -55,6 +55,8 @@ import {
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
   toHaveReceivedLastCommandWith,
+  toReceiveAnyCommand,
+  toHaveReceivedAnyCommand,
 } from "aws-sdk-client-mock-vitest";
 
 expect.extend({
@@ -70,6 +72,8 @@ expect.extend({
   toHaveReceivedNthCommandWith,
   toReceiveLastCommandWith,
   toHaveReceivedLastCommandWith,
+  toReceiveAnyCommand,
+  toHaveReceivedAnyCommand,
 });
 ```
 

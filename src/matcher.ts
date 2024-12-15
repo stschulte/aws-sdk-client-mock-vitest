@@ -9,25 +9,23 @@ import { ObjectContaining } from '@vitest/expect';
 
 import { notNull, ordinalOf } from './utils.js';
 
+/**
+ * We define some aliases
+ */
+interface AliasMatcher<R> {
+  toReceiveAnyCommand: BaseMatcher<R>['toHaveReceivedAnyCommand'];
+  toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
+  toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
+  toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
+  toReceiveCommandWith: BaseMatcher<R>['toHaveReceivedCommandWith'];
+  toReceiveLastCommandWith: BaseMatcher<R>['toHaveReceivedLastCommandWith'];
+  toReceiveNthCommandWith: BaseMatcher<R>['toHaveReceivedNthCommandWith'];
+}
+
 type AwsCommandConstructur<
   Input extends object,
   Output extends MetadataBearer,
 > = new (input: Input) => AwsCommand<Input, Output>;
-
-/*
-  unfortunately RawMatcherFn from @vitest/expect defines a matcher like this
-
-      (this: T, received: any, expected: any, options?: any): ExpectationResult;
-
-  this does not work in our case since we may get multiple values for expected,
-  e.g.
-
-      toHaveReceivedNthCommandWith(PutObjectCommand, 2, {
-        Bucket: "foo",
-        Key: "test2.txt",
-      });
-*/
-type CustomMatcherFn = (this: MatcherState, ...args: any) => ExpectationResult;
 
 /**
  * This defines our matchers as they can be used in actual tests, see
@@ -35,6 +33,8 @@ type CustomMatcherFn = (this: MatcherState, ...args: any) => ExpectationResult;
  * for reference
  */
 interface BaseMatcher<R> {
+  toHaveReceivedAnyCommand(): R;
+
   toHaveReceivedCommand<Input extends object, Ouptut extends MetadataBearer>(
     command: AwsCommandConstructur<Input, Ouptut>
   ): R;
@@ -80,28 +80,17 @@ interface BaseMatcher<R> {
   ): R;
 }
 
-/**
- * We define some aliases
- */
-interface AliasMatcher<R> {
-  toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
-  toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
-  toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
-  toReceiveCommandWith: BaseMatcher<R>['toHaveReceivedCommandWith'];
-  toReceiveLastCommandWith: BaseMatcher<R>['toHaveReceivedLastCommandWith'];
-  toReceiveNthCommandWith: BaseMatcher<R>['toHaveReceivedNthCommandWith'];
-}
-
 type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
 
 function formatCalls(
   context: MatcherState,
   client: AwsStub<any, any, any>,
-  command: AwsCommandConstructur<any, any>,
+  command: AwsCommandConstructur<any, any> | undefined,
   expectedCall: Record<string, any> | undefined,
   message: string,
 ): string {
-  const calls = client.commandCalls(command);
+  const clientName = client.clientName();
+  const calls = command ? client.commandCalls(command) : client.calls();
 
   return calls.length === 0
     ? message
@@ -111,18 +100,22 @@ function formatCalls(
         'Received:',
         '',
         ...calls.flatMap((call, index) => {
-        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-          const input = call.args[0].input;
+          const arg = call.args[0];
+          const name = command?.name ?? `${clientName} with ${arg.constructor.name}`;
+
+          /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+          const input = arg.input;
+
           return [
-            `   ${ordinalOf(index + 1)} ${command.name} call`,
+            `   ${ordinalOf(index + 1)} ${name} call`,
             '',
             expectedCall
               ? context.utils.diff(expectedCall, input, { omitAnnotationLines: true })
               : context.utils
-                .stringify(input)
-                .split('\n')
-                .map(line => `    ${line}`)
-                .join('\n'),
+                  .stringify(input)
+                  .split('\n')
+                  .map(line => `    ${line}`)
+                  .join('\n'),
             '',
           ].filter(notNull);
         }),
@@ -130,11 +123,12 @@ function formatCalls(
       ].join('\n');
 }
 
-const toHaveReceivedCommandTimes: CustomMatcherFn = function (
+function toHaveReceivedCommandTimes(
+  this: MatcherState,
   client: AwsStub<any, any, any>,
   command: AwsCommandConstructur<any, any>,
   times: number,
-) {
+): ExpectationResult {
   const { isNot } = this;
   const callCount = client.commandCalls(command).length;
   const pass = callCount === times;
@@ -151,10 +145,11 @@ const toHaveReceivedCommandTimes: CustomMatcherFn = function (
 };
 const toReceiveCommandTimes = toHaveReceivedCommandTimes;
 
-const toHaveReceivedCommandOnce: CustomMatcherFn = function (
+function toHaveReceivedCommandOnce(
+  this: MatcherState,
   client: AwsStub<any, any, any>,
   command: AwsCommandConstructur<any, any>,
-) {
+): ExpectationResult {
   const { isNot } = this;
   const callCount = client.commandCalls(command).length;
   const pass = callCount === 1;
@@ -170,10 +165,11 @@ const toHaveReceivedCommandOnce: CustomMatcherFn = function (
 };
 const toReceiveCommandOnce = toHaveReceivedCommandOnce;
 
-const toHaveReceivedCommand: CustomMatcherFn = function (
+function toHaveReceivedCommand(
+  this: MatcherState,
   client: AwsStub<any, any, any>,
   command: AwsCommandConstructur<any, any>,
-) {
+): ExpectationResult {
   const { isNot } = this;
   const callCount = client.commandCalls(command).length;
   const pass = callCount >= 1;
@@ -189,11 +185,12 @@ const toHaveReceivedCommand: CustomMatcherFn = function (
 };
 const toReceiveCommand = toHaveReceivedCommand;
 
-const toHaveReceivedCommandWith: CustomMatcherFn = function (
+function toHaveReceivedCommandWith(
+  this: MatcherState,
   client: AwsStub<any, any, any>,
   command: AwsCommandConstructur<any, any>,
   input: Record<string, any>,
-) {
+): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
@@ -215,12 +212,13 @@ const toReceiveCommandWith = toHaveReceivedCommandWith;
 /*
 
   */
-const toHaveReceivedNthCommandWith: CustomMatcherFn = function (
+function toHaveReceivedNthCommandWith(
+  this: MatcherState,
   client: AwsStub<any, any, any>,
   command: AwsCommandConstructur<any, any>,
   times: number,
   input: Record<string, any>,
-) {
+): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
@@ -241,11 +239,12 @@ const toHaveReceivedNthCommandWith: CustomMatcherFn = function (
 };
 const toReceiveNthCommandWith = toHaveReceivedNthCommandWith;
 
-const toHaveReceivedLastCommandWith: CustomMatcherFn = function (
+function toHaveReceivedLastCommandWith(
+  this: MatcherState,
   client: AwsStub<any, any, any>,
   command: AwsCommandConstructur<any, any>,
   input: Record<string, any>,
-) {
+): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
@@ -266,14 +265,36 @@ const toHaveReceivedLastCommandWith: CustomMatcherFn = function (
 };
 const toReceiveLastCommandWith = toHaveReceivedLastCommandWith;
 
+function toHaveReceivedAnyCommand(
+  this: MatcherState,
+  client: AwsStub<any, any, any>,
+) {
+  const { isNot } = this;
+  const calls = client.calls();
+  const pass = calls.length > 0;
+
+  return {
+    message: () => {
+      const message = isNot
+        ? `expected client "${client.clientName()}" to not receive any calls, but was called`
+        : `expected client "${client.clientName()}" to have been called, but was not called`;
+      return formatCalls(this, client, undefined, undefined, message);
+    },
+    pass,
+  };
+}
+const toReceiveAnyCommand = toHaveReceivedAnyCommand;
+
 export type { CustomMatcher };
 export {
+  toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
   toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveAnyCommand,
   toReceiveCommand,
   toReceiveCommandOnce,
   toReceiveCommandTimes,

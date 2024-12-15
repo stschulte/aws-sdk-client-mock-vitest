@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
   toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveAnyCommand,
   toReceiveCommand,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
@@ -16,12 +18,14 @@ import {
 } from '../src/index.js';
 
 expect.extend({
+  toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
   toHaveReceivedLastCommandWith,
   toHaveReceivedNthCommandWith,
+  toReceiveAnyCommand,
   toReceiveCommand,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
@@ -38,12 +42,14 @@ describe('aws-sdk-client-mock-vitest', () => {
     'toHaveReceivedCommandWith',
     'toHaveReceivedLastCommandWith',
     'toHaveReceivedNthCommandWith',
+    'toHaveReceivedAnyCommand',
     'toReceiveCommand',
     'toReceiveCommandOnce',
     'toReceiveCommandTimes',
     'toReceiveCommandWith',
     'toReceiveLastCommandWith',
     'toReceiveNthCommandWith',
+    'toReceiveAnyCommand',
   ])('should be able to extend with %s', (matcher) => {
     expect(expect('something')).toHaveProperty(matcher);
   });
