@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add new matcher `toHaveReceivedAnyCommand`
 
+### Changed
+
+- `aws-sdk-client-mock` is now a peer dependency. This should allow usage
+  with a broader range of `aws-sdk-client-mock` versions without feer to install
+  conflicting versions
+
 ## [4.0.1] - 2024-10-16
 
 ### Changed
