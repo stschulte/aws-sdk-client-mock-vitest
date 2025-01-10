@@ -35,46 +35,46 @@ type AwsCommandConstructur<
 interface BaseMatcher<R> {
   toHaveReceivedAnyCommand(): R;
 
-  toHaveReceivedCommand<Input extends object, Ouptut extends MetadataBearer>(
-    command: AwsCommandConstructur<Input, Ouptut>
+  toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
+    command: AwsCommandConstructur<Input, Output>
   ): R;
 
   toHaveReceivedCommandOnce<
     Input extends object,
-    Ouptut extends MetadataBearer,
+    Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Ouptut>
+    command: AwsCommandConstructur<Input, Output>
   ): R;
 
   toHaveReceivedCommandTimes<
     Input extends object,
-    Ouptut extends MetadataBearer,
+    Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Ouptut>,
+    command: AwsCommandConstructur<Input, Output>,
     times: number
   ): R;
 
   toHaveReceivedCommandWith<
     Input extends object,
-    Ouptut extends MetadataBearer,
+    Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Ouptut>,
+    command: AwsCommandConstructur<Input, Output>,
     input: Partial<Input>
   ): R;
 
   toHaveReceivedLastCommandWith<
     Input extends object,
-    Ouptut extends MetadataBearer,
+    Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Ouptut>,
+    command: AwsCommandConstructur<Input, Output>,
     input: Partial<Input>
   ): R;
 
   toHaveReceivedNthCommandWith<
     Input extends object,
-    Ouptut extends MetadataBearer,
+    Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Ouptut>,
+    command: AwsCommandConstructur<Input, Output>,
     times: number,
     input: Partial<Input>
   ): R;
