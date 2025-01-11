@@ -5,20 +5,25 @@
 # Small script to freshly start over installing all
 # dependencies.
 #
-# Can be used to upgrade all dependencies, so be
-# carefull executing this.
+# Script can be used to upgrade all dependencies to
+# to the latest version by simply having npm figure out
+# the dependency tree again.
+#
+# Be careful as this will also upgrade over major versions
+
 set -e
 
-DEPS=(
+RUNTIME_DEPENDENCIES=(
   "@vitest/expect"
   "tslib"
   "@smithy/types"
 )
-DDEPS=(
-    "typescript"
-    "@aws-sdk/client-ec2"
-    "@aws-sdk/client-s3"
 
+BUILDTIME_DEPENDENCIES=(
+    "typescript"
+    "@types/node"
+
+    "@aws-sdk/client-s3"
     "aws-sdk-client-mock"
 
     "eslint"
@@ -32,7 +37,6 @@ DDEPS=(
 
     "vitest"
     "@vitest/coverage-v8"
-    "@types/node"
 )
 
 if [[ ! -f package.json ]]; then
@@ -41,29 +45,25 @@ if [[ ! -f package.json ]]; then
 fi
 
 echo "Cleanup"
-rm -rf node_modules
-rm -rf package-lock.json
-rm -rf *.tgz coverage dist
-rm -rf dist
+rm -rf node_modules package-lock.json *.tgz coverage dist
 
-echo "Replacing package.json without dependencies"
 NEW_PACKAGE_JSON=`mktemp package.json.XXXXXXXXXX`
 chmod 0644 "$NEW_PACKAGE_JSON"
 jq 'del(.dependencies, .devDependencies)' package.json > "$NEW_PACKAGE_JSON"
 mv "$NEW_PACKAGE_JSON" package.json
 
-
 echo ">> Installing dependencies"
-for PKG in "${DEPS[@]}"; do
-  echo " * ${PKG}"
+for PKG in "${RUNTIME_DEPENDENCIES[@]}"; do
+  echo " ● ${PKG}"
 done
-npm install "${DEPS[@]}"
+npm install "${RUNTIME_DEPENDENCIES[@]}"
 
 echo ">> Installing development dependencies"
-for PKG in "${DDEPS[@]}"; do
-  echo " * ${PKG}"
+for PKG in "${BUILDTIME_DEPENDENCIES[@]}"; do
+  echo " ● ${PKG}"
 done
-npm install --save-dev "${DDEPS[@]}"
+npm install --save-dev "${BUILDTIME_DEPENDENCIES[@]}"
+
 echo ">> DONE"
 
 echo ""
