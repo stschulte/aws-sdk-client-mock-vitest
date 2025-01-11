@@ -34,15 +34,16 @@
   },
   "homepage": "https://github.com/stschulte/aws-sdk-client-mock-vitest#readme",
   "peerDependencies": {
+    "@smithy/types": ">=3.5.0",
     "aws-sdk-client-mock": ">=2.2.0"
   },
   "dependencies": {
-    "@smithy/types": "^3.5.0",
     "@vitest/expect": "^2.1.3",
     "tslib": "^2.8.0"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.726.1",
+    "@aws-sdk/client-secrets-manager": "^3.726.1",
     "@eslint/js": "^9.18.0",
     "@stylistic/eslint-plugin": "^2.12.1",
     "@types/eslint__js": "^8.42.3",

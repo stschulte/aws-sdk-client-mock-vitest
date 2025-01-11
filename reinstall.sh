@@ -16,7 +16,6 @@ set -e
 RUNTIME_DEPENDENCIES=(
   "@vitest/expect"
   "tslib"
-  "@smithy/types"
 )
 
 BUILDTIME_DEPENDENCIES=(
@@ -24,6 +23,7 @@ BUILDTIME_DEPENDENCIES=(
     "@types/node"
 
     "@aws-sdk/client-s3"
+    "@aws-sdk/client-secrets-manager"
     "aws-sdk-client-mock"
 
     "eslint"

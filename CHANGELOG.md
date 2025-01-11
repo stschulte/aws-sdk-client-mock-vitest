@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `@smithy/types` is now a peer dependency. This should allow usage
+  with a broader range of `aws-sdk-client-mock` versions without feer to install
+  conflicting versions.
+
 ## [5.0.0] - 2024-12-15
 
 ### Added
