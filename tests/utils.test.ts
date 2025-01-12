@@ -3,15 +3,15 @@ import { describe, expect, it } from 'vitest';
 import { notNull, ordinalOf } from '../src/utils.js';
 
 describe('notNull', () => {
-  it('should return true when not null', () => {
+  it('returns true when not null', () => {
     expect(notNull('Hi')).toBe(true);
   });
 
-  it('should return false when null', () => {
+  it('returns false when null', () => {
     expect(notNull(null)).toBe(false);
   });
 
-  it('should return true when undefined', () => {
+  it('returns true when undefined', () => {
     expect(notNull(undefined)).toBe(true);
   });
 });
@@ -39,7 +39,7 @@ describe('ordinalOf', () => {
     [1022, '1022nd'],
     [1023, '1023rd'],
   ];
-  it.each(cases)('should translate %d to %s', (a, b) => {
+  it.each(cases)('translates %d to %s', (a, b) => {
     expect(ordinalOf(a)).toStrictEqual(b);
   });
 });

@@ -52,7 +52,7 @@ describe('aws-sdk-client-mock-vitest', () => {
     'toReceiveLastCommandWith',
     'toReceiveNthCommandWith',
     'toReceiveAnyCommand',
-  ])('should be able to extend with %s', (matcher) => {
+  ])('extend matcher to extend with %s', (matcher) => {
     expect(expect('something')).toHaveProperty(matcher);
   });
 
