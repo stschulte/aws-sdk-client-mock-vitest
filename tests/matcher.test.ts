@@ -6,6 +6,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
+import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -397,6 +398,21 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
+  it('passes with a correct asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.txt$/) as string,
+    });
+  });
+
   it('passes when received at least once with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
@@ -474,6 +490,21 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
+  it.fails('fails on failed asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.jpg/) as string,
+    });
+  });
+
   describe('not', () => {
     it('passes when never called', () => {
       const s3Mock = mockClient(S3Client);
@@ -516,6 +547,21 @@ describe('toReceiveCommandWith', () => {
       });
     });
 
+    it.fails('fails on correct asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.txt$/) as string,
+      });
+    });
+
     it('passes when called with additional arguments', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
@@ -524,6 +570,21 @@ describe('toReceiveCommandWith', () => {
         Bucket: 'foo',
         Key: 'test.txt',
         VersionId: 'abc',
+      });
+    });
+
+    it('passes on incorrect asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
       });
     });
   });
@@ -546,6 +607,21 @@ describe('toHaveReceivedCommandWith', () => {
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
       Bucket: 'foo',
+    });
+  });
+
+  it('passes with a correct asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.txt$/) as string,
     });
   });
 
@@ -626,6 +702,21 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
+  it.fails('fails on failed asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.jpg/) as string,
+    });
+  });
+
   describe('not', () => {
     it('passes when never called', () => {
       const s3Mock = mockClient(S3Client);
@@ -668,6 +759,21 @@ describe('toHaveReceivedCommandWith', () => {
       });
     });
 
+    it.fails('fails on correct asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.txt$/) as string,
+      });
+    });
+
     it('passes when called with additional arguments', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
@@ -676,6 +782,21 @@ describe('toHaveReceivedCommandWith', () => {
         Bucket: 'foo',
         Key: 'test.txt',
         VersionId: 'abc',
+      });
+    });
+
+    it('passes on incorrect asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
       });
     });
   });
