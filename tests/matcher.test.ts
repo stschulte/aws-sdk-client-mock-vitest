@@ -6,11 +6,13 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
+import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
 import {
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
@@ -18,6 +20,7 @@ import {
   toHaveReceivedNthCommandWith,
   toReceiveAnyCommand,
   toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
   toReceiveCommandWith,
@@ -28,6 +31,7 @@ import {
 expect.extend({
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
@@ -35,6 +39,7 @@ expect.extend({
   toHaveReceivedNthCommandWith,
   toReceiveAnyCommand,
   toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
   toReceiveCommandWith,
@@ -43,12 +48,12 @@ expect.extend({
 });
 
 describe('toReceiveCommandTimes', () => {
-  it('should pass with 0 received commands', () => {
+  it('passes with 0 received commands', () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toReceiveCommandTimes(PutObjectCommand, 0);
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -60,45 +65,49 @@ describe('toReceiveCommandTimes', () => {
     expect(s3Mock).toReceiveCommandTimes(GetBucketAclCommand, 3);
   });
 
-  it.fails('should fail when command is not called as specified', async () => {
+  it('fails when command is not called as specified', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
     await s3.send(new GetBucketAclCommand({ Bucket: 'bar' }));
     await s3.send(new GetBucketAclCommand({ Bucket: 'baz' }));
-    expect(s3Mock).toReceiveCommandTimes(GetBucketAclCommand, 1);
+    expect(() => {
+      expect(s3Mock).toReceiveCommandTimes(GetBucketAclCommand, 1);
+    }).toThrow(/expected "GetBucketAclCommand" to be called 1 times, but got 3 times/);
   });
 
   describe('not', () => {
-    it('should pass when not called', () => {
+    it('passes when not called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommandTimes(PutObjectCommand, 1);
     });
 
-    it('should pass when called different than specified', async () => {
+    it('passes when called different than specified', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       expect(s3Mock).not.toReceiveCommandTimes(PutObjectCommand, 2);
     });
 
-    it.fails('should fail when command received as specified', async () => {
+    it('fails when command received as specified', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommandTimes(GetObjectCommand, 1);
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandTimes(GetObjectCommand, 1);
+      }).toThrow(/expected "GetObjectCommand" to not be called 1 times/);
     });
   });
 });
 
 describe('toHaveReceivedCommandTimes', () => {
-  it('should pass with 0 received commands', () => {
+  it('passes with 0 received commands', () => {
     const s3Mock = mockClient(S3Client);
     expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -110,60 +119,68 @@ describe('toHaveReceivedCommandTimes', () => {
     expect(s3Mock).toHaveReceivedCommandTimes(GetBucketAclCommand, 3);
   });
 
-  it.fails('should fail when command is not called as specified', async () => {
+  it('fails when command is not called as specified', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
     await s3.send(new GetBucketAclCommand({ Bucket: 'bar' }));
     await s3.send(new GetBucketAclCommand({ Bucket: 'baz' }));
-    expect(s3Mock).toHaveReceivedCommandTimes(GetBucketAclCommand, 1);
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandTimes(GetBucketAclCommand, 1);
+    }).toThrow(/expected "GetBucketAclCommand" to be called 1 times, but got 3 times/);
   });
 
   describe('not', () => {
-    it('should pass when not called', () => {
+    it('passes when not called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommandTimes(PutObjectCommand, 1);
     });
 
-    it('should pass when called different than specified', async () => {
+    it('passes when called different than specified', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       expect(s3Mock).not.toHaveReceivedCommandTimes(PutObjectCommand, 2);
     });
 
-    it.fails('should fail when command received as specified', async () => {
+    it('fails when command received as specified', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommandTimes(GetObjectCommand, 1);
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandTimes(GetObjectCommand, 1);
+      }).toThrow(/expected "GetObjectCommand" to not be called 1 times/);
     });
   });
 });
 
 describe('toReceiveCommandOnce', () => {
-  it('should pass when called exactly once', async () => {
+  it('passes when called exactly once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
   });
 
-  it.fails('should fail when not called', () => {
+  it('fails when not called', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called once, but got 0 times/);
   });
 
-  it.fails('should fail when called more than once', async () => {
+  it('fails when called more than once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
-    expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toReceiveCommandOnce(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called once, but got 2 times/);
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -173,26 +190,29 @@ describe('toReceiveCommandOnce', () => {
   });
 
   describe('not', () => {
-    it('should pass when not called', () => {
+    it('passes when not called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommandOnce(GetObjectCommand);
     });
 
-    it.fails('should fail when called exactly once', async () => {
+    it('fails when called exactly once', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommandOnce(GetObjectCommand);
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandOnce(GetObjectCommand);
+      }).toThrow(/expected "GetObjectCommand" to not be called once/);
     });
 
-    it('should pass when called more than once', async () => {
+    it('passes when called more than once', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
       expect(s3Mock).not.toReceiveCommandOnce(GetObjectCommand);
     });
-    it('should ignore other commands', async () => {
+
+    it('ignores other commands', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
@@ -202,27 +222,31 @@ describe('toReceiveCommandOnce', () => {
 });
 
 describe('toHaveReceivedCommandOnce', () => {
-  it('should pass when called exactly once', async () => {
+  it('passes when called exactly once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
   });
 
-  it.fails('should fail when not called', () => {
+  it('fails when not called', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called once, but got 0 times/);
   });
 
-  it.fails('should fail when called more than once', async () => {
+  it('fails when called more than once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
-    expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandOnce(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called once, but got 2 times/);
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -232,19 +256,21 @@ describe('toHaveReceivedCommandOnce', () => {
   });
 
   describe('not', () => {
-    it('should pass when not called', () => {
+    it('passes when not called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommandOnce(GetObjectCommand);
     });
 
-    it.fails('should fail when called exactly once', async () => {
+    it('fails when called exactly once', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-      expect(s3Mock).not.toHaveReceivedCommandOnce(GetObjectCommand);
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommandOnce(GetObjectCommand);
+      }).toThrow(/expected "GetObjectCommand" to not be called once/);
     });
 
-    it('should pass when called more than once', async () => {
+    it('passes when called more than once', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -252,7 +278,7 @@ describe('toHaveReceivedCommandOnce', () => {
       expect(s3Mock).not.toHaveReceivedCommandOnce(GetObjectCommand);
     });
 
-    it('should ignore other commands', async () => {
+    it('ignores other commands', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
@@ -262,19 +288,21 @@ describe('toHaveReceivedCommandOnce', () => {
 });
 
 describe('toReceiveCommand', () => {
-  it.fails('should fail when no command received', () => {
+  it('fails when no command received', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toReceiveCommand(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toReceiveCommand(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called at least once/);
   });
 
-  it('should pass when received command once', async () => {
+  it('passes when received command once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     expect(s3Mock).toReceiveCommand(GetObjectCommand);
   });
 
-  it('should pass when received command more than once', async () => {
+  it('passes when received command more than once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -282,34 +310,38 @@ describe('toReceiveCommand', () => {
     expect(s3Mock).toReceiveCommand(GetObjectCommand);
   });
 
-  it.fails('should fail when only received other commands', async () => {
+  it('fails when only received other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
-    expect(s3Mock).toReceiveCommand(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toReceiveCommand(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called at least once/);
   });
 
   describe('not', () => {
-    it('should pass when no command received', () => {
+    it('passes when no command received', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
     });
 
-    it('should pass when other commands received', async () => {
+    it('passes when other commands received', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
       expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
     });
 
-    it.fails('should fail when command received once', async () => {
+    it('fails when command received once', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
+      }).toThrow(/expected "GetObjectCommand" to not be called at all, but actually been called 1 times/);
     });
 
-    it.fails('should fail when command received multiple times', async () => {
+    it.fails('fails when command received multiple times', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -320,19 +352,21 @@ describe('toReceiveCommand', () => {
 });
 
 describe('toHaveReceivedCommand', () => {
-  it.fails('should fail when no command received', () => {
+  it('fails when no command received', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called at least once/);
   });
 
-  it('should pass when received command once', async () => {
+  it('passes when received command once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
     expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
   });
 
-  it('should pass when received command more than once', async () => {
+  it('passes when received command more than once', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -340,45 +374,51 @@ describe('toHaveReceivedCommand', () => {
     expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
   });
 
-  it.fails('should fail when only received other commands', async () => {
+  it('fails when only received other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
-    expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommand(GetObjectCommand);
+    }).toThrow(/expected "GetObjectCommand" to be called at least once/);
   });
 
   describe('not', () => {
-    it('should pass when no command received', () => {
+    it('passes when no command received', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
     });
 
-    it('should pass when other commands received', async () => {
+    it('passes when other commands received', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
       expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
     });
 
-    it.fails('should fail when command received once', async () => {
+    it('fails when command received once', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-      expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
+      }).toThrow(/expected "GetObjectCommand" to not be called at all, but actually been called 1 times/);
     });
 
-    it.fails('should fail when command received multiple times', async () => {
+    it('fails when command received multiple times', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
-      expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommand(GetObjectCommand);
+      }).toThrow(/expected "GetObjectCommand" to not be called at all, but actually been called 2 times/);
     });
   });
 });
 
 describe('toReceiveCommandWith', () => {
-  it('should pass when received with command', async () => {
+  it('passes when received with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -388,7 +428,7 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
-  it('should pass when received with partial command', async () => {
+  it('passes when received with partial command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -397,7 +437,22 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
-  it('should pass when received at least once with command', async () => {
+  it('passes with a correct asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.txt$/) as string,
+    });
+  });
+
+  it('passes when received at least once with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'bucket1', Key: 'key1' }));
@@ -410,7 +465,7 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
-  it('should pass when received at least once with partial command', async () => {
+  it('passes when received at least once with partial command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'bucket1', Key: 'key1' }));
@@ -422,7 +477,7 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
-  it('should pass when received mutliple times with command', async () => {
+  it('passes when received mutliple times with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -433,7 +488,7 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
-  it('should pass when received mutliple times with partial command', async () => {
+  it('passes when received mutliple times with partial command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test1.txt' }));
@@ -443,39 +498,62 @@ describe('toReceiveCommandWith', () => {
     });
   });
 
-  it.fails('should fail when received with wrong command', async () => {
+  it('fails when received with wrong command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-    expect(s3Mock).toReceiveCommandWith(PutObjectCommand, {
-      Bucket: 'foo',
-      Key: 'test.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveCommandWith(PutObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    }).toThrow(/expected "PutObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when input does not match', async () => {
+  it('fails when input does not match', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-    expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'wrongkey.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'wrongkey.txt',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when input misses fields', async () => {
+  it('fails when input misses fields', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-    expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'test.txt',
-      VersionId: '10',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+        VersionId: '10',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called with arguments/);
+  });
+
+  it('fails on failed asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(() => {
+      expect(s3Mock).toReceiveCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called with arguments/);
   });
 
   describe('not', () => {
-    it('shoud pass when never called', () => {
+    it('passes when never called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveCommandWith(PutObjectCommand, {
         Bucket: 'foo',
@@ -483,7 +561,7 @@ describe('toReceiveCommandWith', () => {
       });
     });
 
-    it('should pass when not called with input', async () => {
+    it('passes when not called with input', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -493,30 +571,51 @@ describe('toReceiveCommandWith', () => {
       });
     });
 
-    it.fails('should fail when one matching input', async () => {
+    it('fails when one matching input', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'baz', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
-        Bucket: 'bar',
-        Key: 'test.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
+          Bucket: 'bar',
+          Key: 'test.txt',
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called with arguments/);
     });
 
-    it.fails('should fail on partial match', async () => {
+    it('fails on partial match', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'baz', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
-        Bucket: 'bar',
-      });
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
+          Bucket: 'bar',
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called with arguments/);
     });
 
-    it('should pass when called with additional arguments', async () => {
+    it('fails on correct asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
+          Bucket: 'foo',
+          Key: expect.stringMatching(/.txt$/) as string,
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called with arguments/);
+    });
+
+    it('passes when called with additional arguments', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -526,11 +625,26 @@ describe('toReceiveCommandWith', () => {
         VersionId: 'abc',
       });
     });
+
+    it('passes on incorrect asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toReceiveCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    });
   });
 });
 
 describe('toHaveReceivedCommandWith', () => {
-  it('should pass when received with command', async () => {
+  it('passes when received with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -540,7 +654,7 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
-  it('should pass when received with partial command', async () => {
+  it('passes when received with partial command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -549,7 +663,22 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
-  it('should pass when received at least once with command', async () => {
+  it('passes with a correct asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.txt$/) as string,
+    });
+  });
+
+  it('passes when received at least once with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'bucket1', Key: 'key1' }));
@@ -562,7 +691,7 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
-  it('should pass when received at least once with partial command', async () => {
+  it('passes when received at least once with partial command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'bucket1', Key: 'key1' }));
@@ -574,7 +703,7 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
-  it('should pass when received mutliple times with command', async () => {
+  it('passes when received mutliple times with command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -585,7 +714,7 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
-  it('should pass when received mutliple times with partial command', async () => {
+  it('passes when received mutliple times with partial command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test1.txt' }));
@@ -595,39 +724,62 @@ describe('toHaveReceivedCommandWith', () => {
     });
   });
 
-  it.fails('should fail when received with wrong command', async () => {
+  it('fails when received with wrong command', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-    expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
-      Bucket: 'foo',
-      Key: 'test.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    }).toThrow(/expected "PutObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when input does not match', async () => {
+  it('fails when input does not match', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-    expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'wrongkey.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'wrongkey.txt',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when input misses fields', async () => {
+  it('fails when input misses fields', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
-    expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'test.txt',
-      VersionId: '10',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+        VersionId: '10',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called with arguments/);
+  });
+
+  it('fails on failed asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called with arguments/);
   });
 
   describe('not', () => {
-    it('shoud pass when never called', () => {
+    it('passes when never called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedCommandWith(PutObjectCommand, {
         Bucket: 'foo',
@@ -635,7 +787,7 @@ describe('toHaveReceivedCommandWith', () => {
       });
     });
 
-    it('should pass when not called with input', async () => {
+    it('passes when not called with input', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -645,30 +797,51 @@ describe('toHaveReceivedCommandWith', () => {
       });
     });
 
-    it.fails('should fail when one matching input', async () => {
+    it('fails when one matching input', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'baz', Key: 'test.txt' }));
-      expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
-        Bucket: 'bar',
-        Key: 'test.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
+          Bucket: 'bar',
+          Key: 'test.txt',
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called with arguments/);
     });
 
-    it.fails('should fail on partial match', async () => {
+    it('fails on partial match', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'baz', Key: 'test.txt' }));
-      expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
-        Bucket: 'bar',
-      });
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
+          Bucket: 'bar',
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called with arguments/);
     });
 
-    it('should pass when called with additional arguments', async () => {
+    it('fails on correct asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
+          Bucket: 'foo',
+          Key: expect.stringMatching(/.txt$/) as string,
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called with arguments/);
+    });
+
+    it('passes when called with additional arguments', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
@@ -678,11 +851,26 @@ describe('toHaveReceivedCommandWith', () => {
         VersionId: 'abc',
       });
     });
+
+    it('passes on incorrect asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    });
   });
 });
 
 describe('toReceiveNthCommandWith', () => {
-  it('should pass when command matches', async () => {
+  it('passes when command matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -694,7 +882,7 @@ describe('toReceiveNthCommandWith', () => {
     });
   });
 
-  it('should pass when command partially matches', async () => {
+  it('passes when command partially matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -705,7 +893,7 @@ describe('toReceiveNthCommandWith', () => {
     });
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -717,30 +905,34 @@ describe('toReceiveNthCommandWith', () => {
     });
   });
 
-  it.fails('should fail when number is incorrect', async () => {
+  it('fails when number is incorrect', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file3.txt' }));
-    expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 3, {
-      Bucket: 'foo',
-      Key: 'file2.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 3, {
+        Bucket: 'foo',
+        Key: 'file2.txt',
+      });
+    }).toThrow(/expected 3rd "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when call is beyond actual calls', async () => {
+  it('fails when call is beyond actual calls', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-    expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 2, {
-      Bucket: 'foo',
-      Key: 'file2.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveNthCommandWith(GetObjectCommand, 2, {
+        Bucket: 'foo',
+        Key: 'file2.txt',
+      });
+    }).toThrow(/expected 2nd "GetObjectCommand" to be called with arguments/);
   });
 
   describe('not', () => {
-    it('should succeed when command does not match', async () => {
+    it('succeeds when command does not match', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -752,7 +944,7 @@ describe('toReceiveNthCommandWith', () => {
       });
     });
 
-    it('should succeed when command has missing inputs', async () => {
+    it('succeeds when command has missing inputs', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -765,7 +957,7 @@ describe('toReceiveNthCommandWith', () => {
       });
     });
 
-    it('should succeed when call is beyond actual calls', async () => {
+    it('succeeds when call is beyond actual calls', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -775,29 +967,33 @@ describe('toReceiveNthCommandWith', () => {
       });
     });
 
-    it.fails('should fail when call matches', async () => {
+    it('fails when call matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-      expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 1, {
-        Bucket: 'foo',
-        Key: 'file1.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 1, {
+          Bucket: 'foo',
+          Key: 'file1.txt',
+        });
+      }).toThrow(/expected 1st "GetObjectCommand" to not be called with arguments/);
     });
 
-    it.fails('should fail when call partially matches', async () => {
+    it('fails when call partially matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-      expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 1, {
-        Bucket: 'foo',
-      });
+      expect(() => {
+        expect(s3Mock).not.toReceiveNthCommandWith(GetObjectCommand, 1, {
+          Bucket: 'foo',
+        });
+      }).toThrow(/expected 1st "GetObjectCommand" to not be called with arguments/);
     });
   });
 });
 
 describe('toHaveReceivedNthCommandWith', () => {
-  it('should pass when command matches', async () => {
+  it('passes when command matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -809,7 +1005,7 @@ describe('toHaveReceivedNthCommandWith', () => {
     });
   });
 
-  it('should pass when command partially matches', async () => {
+  it('passes when command partially matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -820,7 +1016,7 @@ describe('toHaveReceivedNthCommandWith', () => {
     });
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -832,30 +1028,34 @@ describe('toHaveReceivedNthCommandWith', () => {
     });
   });
 
-  it.fails('should fail when number is incorrect', async () => {
+  it('fails when number is incorrect', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file3.txt' }));
-    expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 3, {
-      Bucket: 'foo',
-      Key: 'file2.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 3, {
+        Bucket: 'foo',
+        Key: 'file2.txt',
+      });
+    }).toThrow(/expected 3rd "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when call is beyond actual calls', async () => {
+  it('fails when call is beyond actual calls', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-    expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
-      Bucket: 'foo',
-      Key: 'file2.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedNthCommandWith(GetObjectCommand, 2, {
+        Bucket: 'foo',
+        Key: 'file2.txt',
+      });
+    }).toThrow(/expected 2nd "GetObjectCommand" to be called with arguments/);
   });
 
   describe('not', () => {
-    it('should succeed when command does not match', async () => {
+    it('succeeds when command does not match', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -867,7 +1067,7 @@ describe('toHaveReceivedNthCommandWith', () => {
       });
     });
 
-    it('should succeed when command has missing inputs', async () => {
+    it('succeeds when command has missing inputs', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -880,7 +1080,7 @@ describe('toHaveReceivedNthCommandWith', () => {
       });
     });
 
-    it('should succeed when call is beyond actual calls', async () => {
+    it('succeeds when call is beyond actual calls', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -890,29 +1090,33 @@ describe('toHaveReceivedNthCommandWith', () => {
       });
     });
 
-    it.fails('should fail when call matches', async () => {
+    it('fails when call matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-      expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 1, {
-        Bucket: 'foo',
-        Key: 'file1.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 1, {
+          Bucket: 'foo',
+          Key: 'file1.txt',
+        });
+      }).toThrow(/expected 1st "GetObjectCommand" to not be called with arguments/);
     });
 
-    it.fails('should fail when call partially matches', async () => {
+    it('fails when call partially matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-      expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 1, {
-        Bucket: 'foo',
-      });
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedNthCommandWith(GetObjectCommand, 1, {
+          Bucket: 'foo',
+        });
+      }).toThrow(/expected 1st "GetObjectCommand" to not be called with arguments/);
     });
   });
 });
 
 describe('toReceiveLastCommandWith', () => {
-  it('should pass when only command matches', async () => {
+  it('passes when only command matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -922,7 +1126,7 @@ describe('toReceiveLastCommandWith', () => {
     });
   });
 
-  it('should pass when last command matches', async () => {
+  it('passes when last command matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -934,7 +1138,7 @@ describe('toReceiveLastCommandWith', () => {
     });
   });
 
-  it('should pass when last command partially matches', async () => {
+  it('passes when last command partially matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -945,7 +1149,7 @@ describe('toReceiveLastCommandWith', () => {
     });
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -957,38 +1161,44 @@ describe('toReceiveLastCommandWith', () => {
     });
   });
 
-  it.fails('should fail when only command does not match', async () => {
+  it('fails when only command does not match', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-    expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'file3.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'file3.txt',
+      });
+    }).toThrow(/expected last "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when last command does not match', async () => {
+  it('fails when last command does not match', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file3.txt' }));
-    expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'file1.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'file1.txt',
+      });
+    }).toThrow(/expected last "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when not called at all', () => {
+  it('fails when not called at all', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'file1.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toReceiveLastCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'file1.txt',
+      });
+    }).toThrow(/expected last "GetObjectCommand" to be called with arguments/);
   });
 
   describe('not', () => {
-    it('should pass when not called', () => {
+    it('passes when not called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
         Bucket: 'foo',
@@ -996,7 +1206,7 @@ describe('toReceiveLastCommandWith', () => {
       });
     });
 
-    it('should pass when last command does not match', async () => {
+    it('passes when last command does not match', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1007,7 +1217,7 @@ describe('toReceiveLastCommandWith', () => {
       });
     });
 
-    it('should pass when input misses fields', async () => {
+    it('passes when input misses fields', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1019,31 +1229,35 @@ describe('toReceiveLastCommandWith', () => {
       });
     });
 
-    it.fails('should fail when last command matches', async () => {
+    it('fails when last command matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
-      expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
-        Bucket: 'foo',
-        Key: 'file2.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
+          Bucket: 'foo',
+          Key: 'file2.txt',
+        });
+      }).toThrow(/expected last "GetObjectCommand" to not be called with arguments/);
     });
 
-    it.fails('should fail when last command partially matches', async () => {
+    it('fails when last command partially matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
-      expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
-        Key: 'file2.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toReceiveLastCommandWith(GetObjectCommand, {
+          Key: 'file2.txt',
+        });
+      }).toThrow(/expected last "GetObjectCommand" to not be called with arguments/);
     });
   });
 });
 
 describe('toHaveReceivedLastCommandWith', () => {
-  it('should pass when only command matches', async () => {
+  it('passes when only command matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1053,7 +1267,7 @@ describe('toHaveReceivedLastCommandWith', () => {
     });
   });
 
-  it('should pass when last command matches', async () => {
+  it('passes when last command matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1065,7 +1279,7 @@ describe('toHaveReceivedLastCommandWith', () => {
     });
   });
 
-  it('should pass when last command partially matches', async () => {
+  it('passes when last command partially matches', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1076,7 +1290,7 @@ describe('toHaveReceivedLastCommandWith', () => {
     });
   });
 
-  it('should ignore other commands', async () => {
+  it('ignores other commands', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1088,38 +1302,44 @@ describe('toHaveReceivedLastCommandWith', () => {
     });
   });
 
-  it.fails('should fail when only command does not match', async () => {
+  it('fails when only command does not match', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-    expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'file3.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'file3.txt',
+      });
+    }).toThrow(/expected last "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when last command does not match', async () => {
+  it('fails when last command does not match', async () => {
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file3.txt' }));
-    expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'file1.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'file1.txt',
+      });
+    }).toThrow(/expected last "GetObjectCommand" to be called with arguments/);
   });
 
-  it.fails('should fail when not called at all', () => {
+  it('fails when not called at all', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
-      Bucket: 'foo',
-      Key: 'file1.txt',
-    });
+    expect(() => {
+      expect(s3Mock).toHaveReceivedLastCommandWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'file1.txt',
+      });
+    }).toThrow(/expected last "GetObjectCommand" to be called with arguments/);
   });
 
   describe('not', () => {
-    it('should pass when not called', () => {
+    it('passes when not called', () => {
       const s3Mock = mockClient(S3Client);
       expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
         Bucket: 'foo',
@@ -1127,7 +1347,7 @@ describe('toHaveReceivedLastCommandWith', () => {
       });
     });
 
-    it('should pass when last command does not match', async () => {
+    it('passes when last command does not match', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1138,7 +1358,7 @@ describe('toHaveReceivedLastCommandWith', () => {
       });
     });
 
-    it('should pass when input misses fields', async () => {
+    it('passes when input misses fields', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
@@ -1150,33 +1370,39 @@ describe('toHaveReceivedLastCommandWith', () => {
       });
     });
 
-    it.fails('should fail when last command matches', async () => {
+    it('fails when last command matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
-      expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
-        Bucket: 'foo',
-        Key: 'file2.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
+          Bucket: 'foo',
+          Key: 'file2.txt',
+        });
+      }).toThrow(/expected last "GetObjectCommand" to not be called with arguments/);
     });
 
-    it.fails('should fail when last command partially matches', async () => {
+    it('fails when last command partially matches', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
-      expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
-        Key: 'file2.txt',
-      });
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedLastCommandWith(GetObjectCommand, {
+          Key: 'file2.txt',
+        });
+      }).toThrow(/expected last "GetObjectCommand" to not be called with arguments/);
     });
   });
 });
 
 describe('toReceiveAnyCommand', () => {
-  it.fails('fails when no command received', () => {
+  it('fails when no command received', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toReceiveAnyCommand();
+    expect(() => {
+      expect(s3Mock).toReceiveAnyCommand();
+    }).toThrow(/expected client "S3Client" to have been called, but was not called/);
   });
 
   it('passes when one command was received', async () => {
@@ -1192,28 +1418,34 @@ describe('toReceiveAnyCommand', () => {
       expect(s3Mock).not.toReceiveAnyCommand();
     });
 
-    it.fails('fails when one command was received', async () => {
+    it('fails when one command was received', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-      expect(s3Mock).not.toReceiveAnyCommand();
+      expect(() => {
+        expect(s3Mock).not.toReceiveAnyCommand();
+      }).toThrow(/expected client "S3Client" to not receive any calls, but was called/);
     });
 
-    it.fails('fails when multiple commands were received', async () => {
+    it('fails when multiple commands were received', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
       await s3.send(new GetObjectAclCommand({ Bucket: 'foo', Key: 'file3.txt' }));
-      expect(s3Mock).not.toReceiveAnyCommand();
+      expect(() => {
+        expect(s3Mock).not.toReceiveAnyCommand();
+      }).toThrow(/expected client "S3Client" to not receive any calls, but was called/);
     });
   });
 });
 
 describe('toHaveReceivedAnyCommand', () => {
-  it.fails('fails when no command received', () => {
+  it('fails when no command received', () => {
     const s3Mock = mockClient(S3Client);
-    expect(s3Mock).toHaveReceivedAnyCommand();
+    expect(() => {
+      expect(s3Mock).toHaveReceivedAnyCommand();
+    }).toThrow(/expected client "S3Client" to have been called, but was not called/);
   });
 
   it('passes when one command was received', async () => {
@@ -1229,20 +1461,422 @@ describe('toHaveReceivedAnyCommand', () => {
       expect(s3Mock).not.toHaveReceivedAnyCommand();
     });
 
-    it.fails('fails when one command was received', async () => {
+    it('fails when one command was received', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
-      expect(s3Mock).not.toHaveReceivedAnyCommand();
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedAnyCommand();
+      }).toThrow(/expected client "S3Client" to not receive any calls, but was called/);
     });
 
-    it.fails('fails when multiple commands were received', async () => {
+    it('fails when multiple commands were received', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file1.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'file2.txt' }));
       await s3.send(new GetObjectAclCommand({ Bucket: 'foo', Key: 'file3.txt' }));
-      expect(s3Mock).not.toHaveReceivedAnyCommand();
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedAnyCommand();
+      }).toThrow(/expected client "S3Client" to not receive any calls, but was called/);
+    });
+  });
+});
+
+describe('toHaveReceivedCommandExactlyOnceWith', () => {
+  it('passes if called exactly once with command', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: 'test.txt',
+    });
+  });
+
+  it('passes if called exactly once with partial command', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+      Bucket: 'foo',
+    });
+  });
+
+  it('passes with a correct asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.txt$/) as string,
+    });
+  });
+
+  it('fails when not called', () => {
+    const s3Mock = mockClient(S3Client);
+
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'bucket2',
+        Key: 'key2',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when received with wrong command', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(PutObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    }).toThrow(/expected "PutObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when input does not match', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'wrongkey.txt',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when input misses fields', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+        VersionId: '10',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails on failed asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when received to often', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test2.txt' }));
+    expect(() => {
+      expect(s3Mock).toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  describe('not', () => {
+    it('passes when never called', () => {
+      const s3Mock = mockClient(S3Client);
+      expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(PutObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    });
+
+    it('passes when not called with input', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+      expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'bar',
+        Key: 'test.txt',
+      });
+    });
+
+    it('passes when called multiple times', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
+      await s3.send(new GetObjectCommand({ Bucket: 'baz', Key: 'test.txt' }));
+      expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'bar',
+        Key: 'test.txt',
+      });
+    });
+
+    it('fails on partial match', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+          Bucket: 'bar',
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called once with arguments/);
+    });
+
+    it('fails on correct asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(() => {
+        expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+          Bucket: 'foo',
+          Key: expect.stringMatching(/.txt$/) as string,
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called once with arguments/);
+    });
+
+    it('passes when called with additional arguments', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+      expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+        VersionId: 'abc',
+      });
+    });
+
+    it('passes on incorrect asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toHaveReceivedCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    });
+  });
+});
+
+describe('toReceiveCommandExactlyOnceWith', () => {
+  it('passes if called exactly once with command', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: 'test.txt',
+    });
+  });
+
+  it('passes if called exactly once with partial command', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+      Bucket: 'foo',
+    });
+  });
+
+  it('passes with a correct asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+      Bucket: 'foo',
+      Key: expect.stringMatching(/.txt$/) as string,
+    });
+  });
+
+  it('fails when not called', () => {
+    const s3Mock = mockClient(S3Client);
+
+    expect(() => {
+      expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'bucket2',
+        Key: 'key2',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when received with wrong command', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(() => {
+      expect(s3Mock).toReceiveCommandExactlyOnceWith(PutObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    }).toThrow(/expected "PutObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when input does not match', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(() => {
+      expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'wrongkey.txt',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when input misses fields', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    expect(() => {
+      expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+        VersionId: '10',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails on failed asymmetric match', async () => {
+    // Assume  code that uses a random string for the bucket key with a known extension
+    const name = randomUUID().toString();
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+    // asymmetric matchers like stringMatching are typed as `any` so we cast them
+    // as we want to compare them to strings
+    expect(() => {
+      expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  it('fails when received to often', async () => {
+    const s3Mock = mockClient(S3Client);
+    const s3 = new S3Client({});
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+    await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test2.txt' }));
+    expect(() => {
+      expect(s3Mock).toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    }).toThrow(/expected "GetObjectCommand" to be called once with arguments/);
+  });
+
+  describe('not', () => {
+    it('passes when never called', () => {
+      const s3Mock = mockClient(S3Client);
+      expect(s3Mock).not.toReceiveCommandExactlyOnceWith(PutObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+      });
+    });
+
+    it('passes when not called with input', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+      expect(s3Mock).not.toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'bar',
+        Key: 'test.txt',
+      });
+    });
+
+    it('passes when called multiple times', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
+      await s3.send(new GetObjectCommand({ Bucket: 'baz', Key: 'test.txt' }));
+      expect(s3Mock).not.toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'bar',
+        Key: 'test.txt',
+      });
+    });
+
+    it('fails on partial match', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+          Bucket: 'bar',
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called once with arguments/);
+    });
+
+    it('fails on correct asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+          Bucket: 'foo',
+          Key: expect.stringMatching(/.txt$/) as string,
+        });
+      }).toThrow(/expected "GetObjectCommand" to not be called once with arguments/);
+    });
+
+    it('passes when called with additional arguments', async () => {
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
+      expect(s3Mock).not.toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: 'test.txt',
+        VersionId: 'abc',
+      });
+    });
+
+    it('passes on incorrect asymmetric match', async () => {
+      // Assume  code that uses a random string for the bucket key with a known extension
+      const name = randomUUID().toString();
+      const s3Mock = mockClient(S3Client);
+      const s3 = new S3Client({});
+      await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
+
+      // asymmetric matchers like stringMatching are typed as `any` so we cast them
+      // as we want to compare them to strings
+      expect(s3Mock).not.toReceiveCommandExactlyOnceWith(GetObjectCommand, {
+        Bucket: 'foo',
+        Key: expect.stringMatching(/.jpg/) as string,
+      });
     });
   });
 });

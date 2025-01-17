@@ -2,6 +2,7 @@ export type { CustomMatcher } from './matcher.js';
 export {
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
@@ -9,6 +10,7 @@ export {
   toHaveReceivedNthCommandWith,
   toReceiveAnyCommand,
   toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
   toReceiveCommandWith,

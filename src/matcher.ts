@@ -15,6 +15,7 @@ import { notNull, ordinalOf } from './utils.js';
 interface AliasMatcher<R> {
   toReceiveAnyCommand: BaseMatcher<R>['toHaveReceivedAnyCommand'];
   toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
+  toReceiveCommandExactlyOnceWith: BaseMatcher<R>['toHaveReceivedCommandExactlyOnceWith'];
   toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
   toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
   toReceiveCommandWith: BaseMatcher<R>['toHaveReceivedCommandWith'];
@@ -37,6 +38,14 @@ interface BaseMatcher<R> {
 
   toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
     command: AwsCommandConstructur<Input, Output>
+  ): R;
+
+  toHaveReceivedCommandExactlyOnceWith<
+    Input extends object,
+    Output extends MetadataBearer,
+  >(
+    command: AwsCommandConstructur<Input, Output>,
+    input: Partial<Input>
   ): R;
 
   toHaveReceivedCommandOnce<
@@ -209,9 +218,34 @@ function toHaveReceivedCommandWith(
   };
 };
 const toReceiveCommandWith = toHaveReceivedCommandWith;
-/*
 
-  */
+function toHaveReceivedCommandExactlyOnceWith(
+  this: MatcherState,
+  client: AwsStub<any, any, any>,
+  command: AwsCommandConstructur<any, any>,
+  input: Record<string, any>,
+): ExpectationResult {
+  const { isNot, utils } = this;
+  const calls = client.commandCalls(command);
+
+  const hasCallWithArgs = calls.some(call =>
+    new ObjectContaining(input).asymmetricMatch(call.args[0].input),
+  );
+
+  const pass = calls.length === 1 && hasCallWithArgs;
+
+  return {
+    message: () => {
+      const message = isNot
+        ? `expected "${command.name}" to not be called once with arguments: ${utils.printExpected(input)}`
+        : `expected "${command.name}" to be called once with arguments: ${utils.printExpected(input)}`;
+      return formatCalls(this, client, command, input, message);
+    },
+    pass,
+  };
+};
+const toReceiveCommandExactlyOnceWith = toHaveReceivedCommandExactlyOnceWith;
+
 function toHaveReceivedNthCommandWith(
   this: MatcherState,
   client: AwsStub<any, any, any>,
@@ -289,6 +323,7 @@ export type { CustomMatcher };
 export {
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
@@ -296,6 +331,7 @@ export {
   toHaveReceivedNthCommandWith,
   toReceiveAnyCommand,
   toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
   toReceiveCommandWith,
