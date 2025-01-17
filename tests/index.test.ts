@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
@@ -12,6 +13,7 @@ import {
   toHaveReceivedNthCommandWith,
   toReceiveAnyCommand,
   toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
   toReceiveCommandWith,
@@ -22,6 +24,7 @@ import {
 expect.extend({
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
   toHaveReceivedCommandOnce,
   toHaveReceivedCommandTimes,
   toHaveReceivedCommandWith,
@@ -29,6 +32,7 @@ expect.extend({
   toHaveReceivedNthCommandWith,
   toReceiveAnyCommand,
   toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
   toReceiveCommandOnce,
   toReceiveCommandTimes,
   toReceiveCommandWith,
@@ -52,6 +56,8 @@ describe('aws-sdk-client-mock-vitest', () => {
     'toReceiveLastCommandWith',
     'toReceiveNthCommandWith',
     'toReceiveAnyCommand',
+    'toReceiveCommandExactlyOnceWith',
+    'toHaveReceivedCommandExactlyOnceWith',
   ])('extend matcher to extend with %s', (matcher) => {
     expect(expect('something')).toHaveProperty(matcher);
   });

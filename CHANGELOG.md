@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- matcher `toHaveReceivedCommandExactlyOnceWith` can be used to verify there are
+  no additional calls
+
 ### Changed
 
 - Update dependencies. This bumps `@vitest/expect` dependency to `^3.0.1`

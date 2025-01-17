@@ -39,7 +39,7 @@ You must register the new matchers explicity (think about putting this to a [set
         },
       });
 
-  to add the custom mat chers before each test run
+  to add the custom matchers before each test run
 */
 import { expect } from "vitest";
 import {
@@ -57,6 +57,8 @@ import {
   toHaveReceivedLastCommandWith,
   toReceiveAnyCommand,
   toHaveReceivedAnyCommand,
+  toReceiveCommandExactlyOnceWith,
+  toHaveReceivedCommandExactlyOnceWith,
 } from "aws-sdk-client-mock-vitest";
 
 expect.extend({
@@ -74,6 +76,8 @@ expect.extend({
   toHaveReceivedLastCommandWith,
   toReceiveAnyCommand,
   toHaveReceivedAnyCommand,
+  toReceiveCommandExactlyOnceWith,
+  toHaveReceivedCommandExactlyOnceWith,
 });
 ```
 
