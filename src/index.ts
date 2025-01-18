@@ -1,5 +1,7 @@
 export type { CustomMatcher } from './matcher.js';
 export {
+  allCustomMatcher,
+  allCustomMatcherWithAliases,
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandExactlyOnceWith,

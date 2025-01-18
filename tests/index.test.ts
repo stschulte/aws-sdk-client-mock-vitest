@@ -2,43 +2,9 @@ import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-sec
 import { mockClient } from 'aws-sdk-client-mock';
 import { describe, expect, it } from 'vitest';
 
-import {
-  toHaveReceivedAnyCommand,
-  toHaveReceivedCommand,
-  toHaveReceivedCommandExactlyOnceWith,
-  toHaveReceivedCommandOnce,
-  toHaveReceivedCommandTimes,
-  toHaveReceivedCommandWith,
-  toHaveReceivedLastCommandWith,
-  toHaveReceivedNthCommandWith,
-  toReceiveAnyCommand,
-  toReceiveCommand,
-  toReceiveCommandExactlyOnceWith,
-  toReceiveCommandOnce,
-  toReceiveCommandTimes,
-  toReceiveCommandWith,
-  toReceiveLastCommandWith,
-  toReceiveNthCommandWith,
-} from '../src/index.js';
+import { allCustomMatcherWithAliases } from '../src/index.js';
 
-expect.extend({
-  toHaveReceivedAnyCommand,
-  toHaveReceivedCommand,
-  toHaveReceivedCommandExactlyOnceWith,
-  toHaveReceivedCommandOnce,
-  toHaveReceivedCommandTimes,
-  toHaveReceivedCommandWith,
-  toHaveReceivedLastCommandWith,
-  toHaveReceivedNthCommandWith,
-  toReceiveAnyCommand,
-  toReceiveCommand,
-  toReceiveCommandExactlyOnceWith,
-  toReceiveCommandOnce,
-  toReceiveCommandTimes,
-  toReceiveCommandWith,
-  toReceiveLastCommandWith,
-  toReceiveNthCommandWith,
-});
+expect.extend(allCustomMatcherWithAliases);
 
 describe('aws-sdk-client-mock-vitest', () => {
   it.each([

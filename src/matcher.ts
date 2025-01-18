@@ -319,8 +319,33 @@ function toHaveReceivedAnyCommand(
 }
 const toReceiveAnyCommand = toHaveReceivedAnyCommand;
 
+const allCustomMatcher = {
+  toHaveReceivedAnyCommand,
+  toHaveReceivedCommand,
+  toHaveReceivedCommandExactlyOnceWith,
+  toHaveReceivedCommandOnce,
+  toHaveReceivedCommandTimes,
+  toHaveReceivedCommandWith,
+  toHaveReceivedLastCommandWith,
+  toHaveReceivedNthCommandWith,
+};
+
+const allCustomMatcherWithAliases = {
+  ...allCustomMatcher,
+  toReceiveAnyCommand,
+  toReceiveCommand,
+  toReceiveCommandExactlyOnceWith,
+  toReceiveCommandOnce,
+  toReceiveCommandTimes,
+  toReceiveCommandWith,
+  toReceiveLastCommandWith,
+  toReceiveNthCommandWith,
+};
+
 export type { CustomMatcher };
 export {
+  allCustomMatcher,
+  allCustomMatcherWithAliases,
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandExactlyOnceWith,

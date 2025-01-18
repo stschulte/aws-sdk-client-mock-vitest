@@ -24,7 +24,33 @@ on your AWS clients.
 npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
-You must register the new matchers explicity (think about putting this to a [setup file](https://vitest.dev/config/#setupfiles)). Feel free to only extend the matchers you are intending to use
+You must register the new matchers explicity (think about putting this to a [setup file](https://vitest.dev/config/#setupfiles)).
+You can either just register the matchers you are interested in, or register all matchers
+
+To register all matchers use the following:
+
+```javascript
+/*
+  you may want to put the following into a file tests/setup.ts
+  and then specify your vite.config.ts as such
+
+      import { defineConfig } from "vitest/config";
+
+      export default defineConfig({
+        test: {
+          setupFiles: ["tests/setup.ts"],
+        },
+      });
+
+  to add the custom matchers before each test run
+*/
+import { expect } from "vitest";
+import { allCustomMatcher } from "aws-sdk-client-mock-vitest";
+
+expect.extend(allCustomMatcher)
+```
+
+You can also register just the matchers you care about:
 
 ```javascript
 /*
