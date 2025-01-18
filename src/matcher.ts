@@ -23,7 +23,7 @@ interface AliasMatcher<R> {
   toReceiveNthCommandWith: BaseMatcher<R>['toHaveReceivedNthCommandWith'];
 }
 
-type AwsCommandConstructur<
+type AwsCommandConstructor<
   Input extends object,
   Output extends MetadataBearer,
 > = new (input: Input) => AwsCommand<Input, Output>;
@@ -37,14 +37,14 @@ interface BaseMatcher<R> {
   toHaveReceivedAnyCommand(): R;
 
   toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
-    command: AwsCommandConstructur<Input, Output>
+    command: AwsCommandConstructor<Input, Output>
   ): R;
 
   toHaveReceivedCommandExactlyOnceWith<
     Input extends object,
     Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Output>,
+    command: AwsCommandConstructor<Input, Output>,
     input: Partial<Input>
   ): R;
 
@@ -52,14 +52,14 @@ interface BaseMatcher<R> {
     Input extends object,
     Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Output>
+    command: AwsCommandConstructor<Input, Output>
   ): R;
 
   toHaveReceivedCommandTimes<
     Input extends object,
     Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Output>,
+    command: AwsCommandConstructor<Input, Output>,
     times: number
   ): R;
 
@@ -67,7 +67,7 @@ interface BaseMatcher<R> {
     Input extends object,
     Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Output>,
+    command: AwsCommandConstructor<Input, Output>,
     input: Partial<Input>
   ): R;
 
@@ -75,7 +75,7 @@ interface BaseMatcher<R> {
     Input extends object,
     Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Output>,
+    command: AwsCommandConstructor<Input, Output>,
     input: Partial<Input>
   ): R;
 
@@ -83,7 +83,7 @@ interface BaseMatcher<R> {
     Input extends object,
     Output extends MetadataBearer,
   >(
-    command: AwsCommandConstructur<Input, Output>,
+    command: AwsCommandConstructor<Input, Output>,
     times: number,
     input: Partial<Input>
   ): R;
@@ -94,7 +94,7 @@ type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
 function formatCalls<Input extends object, Output extends MetadataBearer>(
   context: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output> | undefined,
+  command: AwsCommandConstructor<Input, Output> | undefined,
   expectedCall: Record<string, unknown> | undefined,
   message: string,
 ): string {
@@ -134,7 +134,7 @@ function formatCalls<Input extends object, Output extends MetadataBearer>(
 function toHaveReceivedCommandTimes<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   times: number,
 ): ExpectationResult {
   const { isNot } = this;
@@ -156,7 +156,7 @@ const toReceiveCommandTimes = toHaveReceivedCommandTimes;
 function toHaveReceivedCommandOnce<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
 ): ExpectationResult {
   const { isNot } = this;
   const callCount = client.commandCalls(command).length;
@@ -176,7 +176,7 @@ const toReceiveCommandOnce = toHaveReceivedCommandOnce;
 function toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
 ): ExpectationResult {
   const { isNot } = this;
   const callCount = client.commandCalls(command).length;
@@ -196,7 +196,7 @@ const toReceiveCommand = toHaveReceivedCommand;
 function toHaveReceivedCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   input: Record<string, unknown>,
 ): ExpectationResult {
   const { isNot, utils } = this;
@@ -221,7 +221,7 @@ const toReceiveCommandWith = toHaveReceivedCommandWith;
 function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   input: Record<string, unknown>,
 ): ExpectationResult {
   const { isNot, utils } = this;
@@ -248,7 +248,7 @@ const toReceiveCommandExactlyOnceWith = toHaveReceivedCommandExactlyOnceWith;
 function toHaveReceivedNthCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   times: number,
   input: Record<string, unknown>,
 ): ExpectationResult {
@@ -275,7 +275,7 @@ const toReceiveNthCommandWith = toHaveReceivedNthCommandWith;
 function toHaveReceivedLastCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructur<Input, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   input: Record<string, unknown>,
 ): ExpectationResult {
   const { isNot, utils } = this;
