@@ -1,18 +1,32 @@
 import { describe, expect, it } from 'vitest';
 
-import { notNull, ordinalOf } from '../src/utils.js';
+import { notNull, notUndefined, ordinalOf } from '../src/utils.js';
 
 describe('notNull', () => {
   it('returns true when not null', () => {
-    expect(notNull('Hi')).toBe(true);
+    expect(notNull('Hi')).toBeTruthy();
   });
 
   it('returns false when null', () => {
-    expect(notNull(null)).toBe(false);
+    expect(notNull(null)).toBeFalsy();
   });
 
   it('returns true when undefined', () => {
-    expect(notNull(undefined)).toBe(true);
+    expect(notNull(undefined)).toBeTruthy();
+  });
+});
+
+describe('notUndefined', () => {
+  it('returns true when not undefined', () => {
+    expect(notUndefined('Hi')).toBeTruthy();
+  });
+
+  it('returns false when undefined', () => {
+    expect(notUndefined(undefined)).toBeFalsy();
+  });
+
+  it('returns true when null', () => {
+    expect(notUndefined(null)).toBeTruthy();
   });
 });
 

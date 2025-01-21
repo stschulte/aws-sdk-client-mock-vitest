@@ -2,6 +2,10 @@ export function notNull<T>(obj: null | T): obj is T {
   return obj !== null;
 }
 
+export function notUndefined<T>(obj: T | undefined): obj is T {
+  return obj !== undefined;
+}
+
 export function ordinalOf(n: number): string {
   const j = n % 10;
   const k = n % 100;

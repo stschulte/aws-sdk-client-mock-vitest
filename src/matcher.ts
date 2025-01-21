@@ -7,7 +7,7 @@ import type { AwsCommand, AwsStub } from 'aws-sdk-client-mock';
 
 import { ObjectContaining } from '@vitest/expect';
 
-import { notNull, ordinalOf } from './utils.js';
+import { notUndefined, ordinalOf } from './utils.js';
 
 /**
  * We define some aliases
@@ -125,7 +125,7 @@ function formatCalls<Input extends object, Output extends MetadataBearer>(
                   .map(line => `    ${line}`)
                   .join('\n'),
             '',
-          ].filter(notNull);
+          ].filter(notUndefined);
         }),
         `Number of calls: ${calls.length.toString()}`,
       ].join('\n');
