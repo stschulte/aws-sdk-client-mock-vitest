@@ -28,7 +28,6 @@ BUILDTIME_DEPENDENCIES=(
 
     "eslint"
     "@eslint/js"
-    "@types/eslint__js"
     "eslint-config-flat-gitignore"
     "eslint-plugin-perfectionist"
     "@stylistic/eslint-plugin"

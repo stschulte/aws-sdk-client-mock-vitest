@@ -38,24 +38,23 @@
     "aws-sdk-client-mock": ">=2.2.0"
   },
   "dependencies": {
-    "@vitest/expect": "^3.0.2",
+    "@vitest/expect": "^3.0.4",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.730.0",
-    "@aws-sdk/client-secrets-manager": "^3.730.0",
-    "@eslint/js": "^9.18.0",
-    "@stylistic/eslint-plugin": "^2.13.0",
-    "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.10.7",
-    "@vitest/coverage-v8": "^3.0.2",
+    "@aws-sdk/client-s3": "^3.735.0",
+    "@aws-sdk/client-secrets-manager": "^3.734.0",
+    "@eslint/js": "^9.19.0",
+    "@stylistic/eslint-plugin": "^3.0.0",
+    "@types/node": "^22.12.0",
+    "@vitest/coverage-v8": "^3.0.4",
     "@vitest/eslint-plugin": "^1.1.25",
     "aws-sdk-client-mock": "^4.1.0",
-    "eslint": "^9.18.0",
-    "eslint-config-flat-gitignore": "^1.0.0",
-    "eslint-plugin-perfectionist": "^4.6.0",
+    "eslint": "^9.19.0",
+    "eslint-config-flat-gitignore": "^2.0.0",
+    "eslint-plugin-perfectionist": "^4.7.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0",
-    "vitest": "^3.0.2"
+    "typescript-eslint": "^8.22.0",
+    "vitest": "^3.0.4"
   }
 }
