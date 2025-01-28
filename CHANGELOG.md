@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.0] - 2025-01-28
+
 ### Added
 
 - New exports `allCustomMatcher` and `allCustomMatcherWithAliases` allows to extend
-  with all matchers instead of importing and extending all individual matchers
+  with all matchers instead through a single import and `expect.extend` call.
 
 ## [6.0.0] - 2025-01-17
 
