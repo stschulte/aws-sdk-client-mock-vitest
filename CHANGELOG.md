@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- change `@vitest/expect` dependency to `>=3.0.5` in order to prevent users against
+  [CVE-2025-24964](https://github.com/advisories/GHSA-9crc-q9x8-hgqq)
+
 ## [6.1.0] - 2025-01-28
 
 ### Added
