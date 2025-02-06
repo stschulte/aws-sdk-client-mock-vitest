@@ -7,17 +7,62 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: Test and build
+  validate:
+    name: Validate TypeScript
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node 22
+      - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm run validate
+
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm run lint
+
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version:
+          - 18
+          - 20
+          - 22
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node_version }}
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
@@ -25,11 +70,23 @@ jobs:
       - name: Test
         run: npm run test:coverage
 
-      - name: Coveralls
+      - name: Coveralls Parallel
         uses: coverallsapp/github-action@v2
         with:
           format: lcov
           file: "./coverage/lcov.info"
+          parallel: true
+          flag-name: run-node-${{matrix.node_version}}
 
       - name: Build
         run: npm pack
+
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
