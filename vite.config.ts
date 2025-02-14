@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config';
 
-const reporters = process.env['GITHUB_ACTIONS'] ? [ 'verbose', 'github-actions' ] : ['verbose']
+const reporters = process.env['GITHUB_ACTIONS'] ? ['verbose', 'github-actions'] : ['verbose'];
 
 export default defineConfig({
   test: {
@@ -9,6 +9,6 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
     },
     include: ['tests/**/*.test.ts'],
-    reporters
+    reporters,
   },
 });
