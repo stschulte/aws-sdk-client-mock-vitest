@@ -15,7 +15,6 @@ set -e
 
 RUNTIME_DEPENDENCIES=(
   "@vitest/expect"
-  "tslib"
 )
 
 BUILDTIME_DEPENDENCIES=(
