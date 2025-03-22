@@ -7,7 +7,7 @@ import type { AwsCommand, AwsStub } from 'aws-sdk-client-mock';
 
 import { ObjectContaining } from '@vitest/expect';
 
-import { notUndefined, ordinalOf } from './utils.js';
+import { notUndefined, objectToRecord, ordinalOf } from './utils.js';
 
 /**
  * We define some aliases
@@ -95,7 +95,7 @@ function formatCalls<Input extends object, Output extends MetadataBearer>(
   utils: MatcherState['utils'],
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output> | undefined,
-  expectedCall: Record<string, unknown> | undefined,
+  expectedCall: Input | undefined,
   message: string,
 ): string {
   const clientName = client.clientName();
@@ -197,13 +197,13 @@ function toHaveReceivedCommandWith<Input extends object, Output extends Metadata
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Record<string, unknown>,
+  input: Input,
 ): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
   const pass = calls.some(call =>
-    new ObjectContaining(input).asymmetricMatch(call.args[0].input),
+    new ObjectContaining(objectToRecord(input)).asymmetricMatch(call.args[0].input),
   );
 
   return {
@@ -222,13 +222,13 @@ function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output exten
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Record<string, unknown>,
+  input: Input,
 ): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
   const hasCallWithArgs = calls.some(call =>
-    new ObjectContaining(input).asymmetricMatch(call.args[0].input),
+    new ObjectContaining(objectToRecord(input)).asymmetricMatch(call.args[0].input),
   );
 
   const pass = calls.length === 1 && hasCallWithArgs;
@@ -250,14 +250,14 @@ function toHaveReceivedNthCommandWith<Input extends object, Output extends Metad
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
   times: number,
-  input: Record<string, unknown>,
+  input: Input,
 ): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
   const call = calls.length < times ? undefined : calls[times - 1];
   const pass = call
-    ? new ObjectContaining(input).asymmetricMatch(call.args[0].input)
+    ? new ObjectContaining(objectToRecord(input)).asymmetricMatch(call.args[0].input)
     : false;
 
   return {
@@ -276,14 +276,14 @@ function toHaveReceivedLastCommandWith<Input extends object, Output extends Meta
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Record<string, unknown>,
+  input: Input,
 ): ExpectationResult {
   const { isNot, utils } = this;
   const calls = client.commandCalls(command);
 
   const call = calls.length === 0 ? undefined : calls[calls.length - 1];
   const pass = call
-    ? new ObjectContaining(input).asymmetricMatch(call.args[0].input)
+    ? new ObjectContaining(objectToRecord(input)).asymmetricMatch(call.args[0].input)
     : false;
 
   return {

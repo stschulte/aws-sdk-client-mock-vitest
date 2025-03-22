@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { notNull, notUndefined, ordinalOf } from '../src/utils.js';
+import { notNull, notUndefined, objectToRecord, ordinalOf } from '../src/utils.js';
 
 describe('notNull', () => {
   it('returns true when not null', () => {
@@ -55,5 +55,36 @@ describe('ordinalOf', () => {
   ];
   it.each(cases)('translates %d to %s', (a, b) => {
     expect(ordinalOf(a)).toStrictEqual(b);
+  });
+});
+
+describe('objectToRecord', () => {
+  it('returns an empty object', () => {
+    expect(objectToRecord({})).toStrictEqual({});
+  });
+
+  it('returns commands as is', () => {
+    const command = {
+      Bucket: 'foo',
+      Key: 'bar',
+    };
+    expect(objectToRecord(command)).toStrictEqual({
+      Bucket: 'foo',
+      Key: 'bar',
+    });
+  });
+
+  it('converts number to strings and removes symbols', () => {
+    const sym = Symbol('foo');
+    const command = {
+      10: 'z',
+      bar: 'y',
+      [sym]: 'x',
+    };
+
+    expect(objectToRecord(command)).toStrictEqual({
+      10: 'z',
+      bar: 'y',
+    });
   });
 });
