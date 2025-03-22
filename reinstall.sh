@@ -35,6 +35,7 @@ BUILDTIME_DEPENDENCIES=(
 
     "vitest"
     "@vitest/coverage-v8"
+    "@vitest/utils"
 )
 
 if [[ ! -f package.json ]]; then

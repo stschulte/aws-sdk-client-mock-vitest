@@ -1,0 +1,19 @@
+Some message
+
+Received:
+
+   1st GetBucketAclCommand call
+
+[2m  {[22m
+[32m-   "Bucket": "baz",[39m
+[31m+   "Bucket": "foo",[39m
+[2m  }[22m
+
+   2nd GetBucketAclCommand call
+
+[2m  {[22m
+[32m-   "Bucket": "baz",[39m
+[31m+   "Bucket": "bar",[39m
+[2m  }[22m
+
+Number of calls: 2
