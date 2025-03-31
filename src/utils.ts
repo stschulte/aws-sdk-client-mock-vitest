@@ -6,10 +6,6 @@ export function notUndefined<T>(obj: T | undefined): obj is T {
   return obj !== undefined;
 }
 
-export function objectToRecord(o: object): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(o));
-}
-
 export function ordinalOf(n: number): string {
   const j = n % 10;
   const k = n % 100;
