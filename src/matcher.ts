@@ -91,15 +91,19 @@ interface BaseMatcher<R> {
 
 type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
 
-function formatCalls<Input extends object, Output extends MetadataBearer>(
-  context: MatcherState,
-  client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output> | undefined,
-  expectedCall: Record<string, unknown> | undefined,
+export function formatCalls<Input extends object, Output extends MetadataBearer, TCmdInput extends Input, TCmdOutput extends Output>(
   message: string,
+  client: AwsStub<Input, Output, unknown>,
+  command: AwsCommandConstructor<TCmdInput, TCmdOutput> | undefined,
+  expectedCall: TCmdInput | undefined,
+  utils: {
+    diff: MatcherState['utils']['diff'];
+    stringify: MatcherState['utils']['stringify'];
+  },
 ): string {
   const clientName = client.clientName();
   const calls = command ? client.commandCalls(command) : client.calls();
+  const { diff, stringify } = utils;
 
   return calls.length === 0
     ? message
@@ -118,9 +122,8 @@ function formatCalls<Input extends object, Output extends MetadataBearer>(
             `   ${ordinalOf(index + 1)} ${name} call`,
             '',
             expectedCall
-              ? context.utils.diff(expectedCall, input, { omitAnnotationLines: true })
-              : context.utils
-                  .stringify(input)
+              ? diff(expectedCall, input, { omitAnnotationLines: true })
+              : stringify(input)
                   .split('\n')
                   .map(line => `    ${line}`)
                   .join('\n'),
@@ -134,19 +137,21 @@ function formatCalls<Input extends object, Output extends MetadataBearer>(
 function toHaveReceivedCommandTimes<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
   times: number,
 ): ExpectationResult {
   const { isNot } = this;
+  const { diff, stringify } = this.utils;
+
   const callCount = client.commandCalls(command).length;
   const pass = callCount === times;
 
   return {
-    message: () => {
+    message() {
       const message = isNot
         ? `expected "${command.name}" to not be called ${times.toString()} times`
         : `expected "${command.name}" to be called ${times.toString()} times, but got ${callCount.toString()} times`;
-      return formatCalls(this, client, command, undefined, message);
+      return formatCalls(message, client, command, undefined, { diff, stringify });
     },
     pass,
   };
@@ -156,17 +161,19 @@ const toReceiveCommandTimes = toHaveReceivedCommandTimes;
 function toHaveReceivedCommandOnce<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
 ): ExpectationResult {
   const { isNot } = this;
+  const { diff, stringify } = this.utils;
+
   const callCount = client.commandCalls(command).length;
   const pass = callCount === 1;
   return {
-    message: () => {
+    message() {
       const message = isNot
         ? `expected "${command.name}" to not be called once`
         : `expected "${command.name}" to be called once, but got ${callCount.toString()} times`;
-      return formatCalls(this, client, command, undefined, message);
+      return formatCalls(message, client, command, undefined, { diff, stringify });
     },
     pass,
   };
@@ -176,17 +183,19 @@ const toReceiveCommandOnce = toHaveReceivedCommandOnce;
 function toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
 ): ExpectationResult {
   const { isNot } = this;
+  const { diff, stringify } = this.utils;
+
   const callCount = client.commandCalls(command).length;
   const pass = callCount >= 1;
   return {
-    message: () => {
+    message() {
       const message = isNot
         ? `expected "${command.name}" to not be called at all, but actually been called ${callCount.toString()} times`
         : `expected "${command.name}" to be called at least once`;
-      return formatCalls(this, client, command, undefined, message);
+      return formatCalls(message, client, command, undefined, { diff, stringify });
     },
     pass,
   };
@@ -196,10 +205,12 @@ const toReceiveCommand = toHaveReceivedCommand;
 function toHaveReceivedCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
-  input: Record<string, unknown>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot, utils } = this;
+  const { isNot } = this;
+  const { diff, printExpected, stringify } = this.utils;
+
   const calls = client.commandCalls(command);
 
   const pass = calls.some(call =>
@@ -207,11 +218,11 @@ function toHaveReceivedCommandWith<Input extends object, Output extends Metadata
   );
 
   return {
-    message: () => {
+    message() {
       const message = isNot
-        ? `expected "${command.name}" to not be called with arguments: ${utils.printExpected(input)}`
-        : `expected "${command.name}" to be called with arguments: ${utils.printExpected(input)}`;
-      return formatCalls(this, client, command, input, message);
+        ? `expected "${command.name}" to not be called with arguments: ${printExpected(input)}`
+        : `expected "${command.name}" to be called with arguments: ${printExpected(input)}`;
+      return formatCalls(message, client, command, input, { diff, stringify });
     },
     pass,
   };
@@ -221,10 +232,12 @@ const toReceiveCommandWith = toHaveReceivedCommandWith;
 function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
-  input: Record<string, unknown>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot, utils } = this;
+  const { isNot } = this;
+  const { diff, printExpected, stringify } = this.utils;
+
   const calls = client.commandCalls(command);
 
   const hasCallWithArgs = calls.some(call =>
@@ -234,11 +247,11 @@ function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output exten
   const pass = calls.length === 1 && hasCallWithArgs;
 
   return {
-    message: () => {
+    message() {
       const message = isNot
-        ? `expected "${command.name}" to not be called once with arguments: ${utils.printExpected(input)}`
-        : `expected "${command.name}" to be called once with arguments: ${utils.printExpected(input)}`;
-      return formatCalls(this, client, command, input, message);
+        ? `expected "${command.name}" to not be called once with arguments: ${printExpected(input)}`
+        : `expected "${command.name}" to be called once with arguments: ${printExpected(input)}`;
+      return formatCalls(message, client, command, input, { diff, stringify });
     },
     pass,
   };
@@ -248,11 +261,13 @@ const toReceiveCommandExactlyOnceWith = toHaveReceivedCommandExactlyOnceWith;
 function toHaveReceivedNthCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
   times: number,
-  input: Record<string, unknown>,
+  input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot, utils } = this;
+  const { isNot } = this;
+  const { diff, printExpected, stringify } = this.utils;
+
   const calls = client.commandCalls(command);
 
   const call = calls.length < times ? undefined : calls[times - 1];
@@ -261,11 +276,11 @@ function toHaveReceivedNthCommandWith<Input extends object, Output extends Metad
     : false;
 
   return {
-    message: () => {
+    message() {
       const message = isNot
-        ? `expected ${ordinalOf(times)} "${command.name}" to not be called with arguments: ${utils.printExpected(input)}`
-        : `expected ${ordinalOf(times)} "${command.name}" to be called with arguments: ${utils.printExpected(input)}`;
-      return formatCalls(this, client, command, input, message);
+        ? `expected ${ordinalOf(times)} "${command.name}" to not be called with arguments: ${printExpected(input)}`
+        : `expected ${ordinalOf(times)} "${command.name}" to be called with arguments: ${printExpected(input)}`;
+      return formatCalls(message, client, command, input, { diff, stringify });
     },
     pass,
   };
@@ -275,10 +290,12 @@ const toReceiveNthCommandWith = toHaveReceivedNthCommandWith;
 function toHaveReceivedLastCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input, Output>,
-  input: Record<string, unknown>,
+  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot, utils } = this;
+  const { isNot } = this;
+  const { diff, printExpected, stringify } = this.utils;
+
   const calls = client.commandCalls(command);
 
   const call = calls.length === 0 ? undefined : calls[calls.length - 1];
@@ -287,11 +304,11 @@ function toHaveReceivedLastCommandWith<Input extends object, Output extends Meta
     : false;
 
   return {
-    message: () => {
+    message() {
       const message = isNot
-        ? `expected last "${command.name}" to not be called with arguments: ${utils.printExpected(input)}`
-        : `expected last "${command.name}" to be called with arguments: ${utils.printExpected(input)}`;
-      return formatCalls(this, client, command, input, message);
+        ? `expected last "${command.name}" to not be called with arguments: ${printExpected(input)}`
+        : `expected last "${command.name}" to be called with arguments: ${printExpected(input)}`;
+      return formatCalls(message, client, command, input, { diff, stringify });
     },
     pass,
   };
@@ -303,15 +320,17 @@ function toHaveReceivedAnyCommand(
   client: AwsStub<object, MetadataBearer, unknown>,
 ) {
   const { isNot } = this;
+  const { diff, stringify } = this.utils;
+
   const calls = client.calls();
   const pass = calls.length > 0;
 
   return {
-    message: () => {
+    message() {
       const message = isNot
         ? `expected client "${client.clientName()}" to not receive any calls, but was called`
         : `expected client "${client.clientName()}" to have been called, but was not called`;
-      return formatCalls(this, client, undefined, undefined, message);
+      return formatCalls(message, client, undefined, undefined, { diff, stringify });
     },
     pass,
   };

@@ -15,7 +15,6 @@ set -e
 
 RUNTIME_DEPENDENCIES=(
   "@vitest/expect"
-  "tslib"
 )
 
 BUILDTIME_DEPENDENCIES=(
@@ -36,6 +35,7 @@ BUILDTIME_DEPENDENCIES=(
 
     "vitest"
     "@vitest/coverage-v8"
+    "@vitest/utils"
 )
 
 if [[ ! -f package.json ]]; then

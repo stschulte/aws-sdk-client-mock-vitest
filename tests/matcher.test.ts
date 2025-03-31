@@ -5,11 +5,16 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { stringify } from '@vitest/utils';
+import { diff } from '@vitest/utils/diff';
 import { mockClient } from 'aws-sdk-client-mock';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import {
+  formatCalls,
   toHaveReceivedAnyCommand,
   toHaveReceivedCommand,
   toHaveReceivedCommandExactlyOnceWith,
@@ -45,6 +50,25 @@ expect.extend({
   toReceiveCommandWith,
   toReceiveLastCommandWith,
   toReceiveNthCommandWith,
+});
+
+function testFile(name: string): string {
+  return readFileSync(join(__dirname, 'data', name), 'utf8');
+}
+
+describe('formatCalls', () => {
+  it('does format calls', async () => {
+    const s3Mock = mockClient(S3Client);
+
+    const s3 = new S3Client({});
+    await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
+    await s3.send(new GetBucketAclCommand({ Bucket: 'bar' }));
+
+    const result = formatCalls('Some message', s3Mock, GetBucketAclCommand, { Bucket: 'baz' }, { diff, stringify });
+    const expectedResult = testFile('format-calls-diff-example');
+
+    expect(result).toStrictEqual(expectedResult);
+  });
 });
 
 describe('toReceiveCommandTimes', () => {
