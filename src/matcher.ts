@@ -137,7 +137,7 @@ export function formatCalls<Input extends object, Output extends MetadataBearer,
 function toHaveReceivedCommandTimes<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   times: number,
 ): ExpectationResult {
   const { isNot } = this;
@@ -161,7 +161,7 @@ const toReceiveCommandTimes = toHaveReceivedCommandTimes;
 function toHaveReceivedCommandOnce<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
 ): ExpectationResult {
   const { isNot } = this;
   const { diff, stringify } = this.utils;
@@ -183,7 +183,7 @@ const toReceiveCommandOnce = toHaveReceivedCommandOnce;
 function toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
 ): ExpectationResult {
   const { isNot } = this;
   const { diff, stringify } = this.utils;
@@ -205,7 +205,7 @@ const toReceiveCommand = toHaveReceivedCommand;
 function toHaveReceivedCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
   const { isNot } = this;
@@ -232,7 +232,7 @@ const toReceiveCommandWith = toHaveReceivedCommandWith;
 function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
   const { isNot } = this;
@@ -261,7 +261,7 @@ const toReceiveCommandExactlyOnceWith = toHaveReceivedCommandExactlyOnceWith;
 function toHaveReceivedNthCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   times: number,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
@@ -290,7 +290,7 @@ const toReceiveNthCommandWith = toHaveReceivedNthCommandWith;
 function toHaveReceivedLastCommandWith<Input extends object, Output extends MetadataBearer>(
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
-  command: AwsCommandConstructor<Input & Record<string, unknown>, Output>,
+  command: AwsCommandConstructor<Input, Output>,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
   const { isNot } = this;
