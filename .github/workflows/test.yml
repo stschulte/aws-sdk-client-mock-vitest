@@ -70,23 +70,11 @@ jobs:
       - name: Test
         run: npm run test:coverage
 
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@v2
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.node_version == 22
         with:
-          format: lcov
-          file: "./coverage/lcov.info"
-          parallel: true
-          flag-name: run-node-${{matrix.node_version}}
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build
         run: npm pack
-
-  finish:
-    needs: test
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@v2
-        with:
-          parallel-finished: true
