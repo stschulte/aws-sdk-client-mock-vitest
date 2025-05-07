@@ -20,12 +20,14 @@ on your AWS clients.
 
 ## Install
 
-```
+```console
 npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
-You must register the new matchers explicity (think about putting this to a [setup file](https://vitest.dev/config/#setupfiles)).
-You can either just register the matchers you are interested in, or register all matchers
+You must register the new matchers explicity (think about putting this to a
+[setup file](https://vitest.dev/config/#setupfiles)). You can either just
+register the matchers you are interested in, or register all available matchers
+(the easiest solution).
 
 To register all matchers use the following:
 
@@ -107,6 +109,8 @@ expect.extend({
 });
 ```
 
+## Typescript support
+
 In case you are using typescript, create a `vitest.d.ts` file with the following content
 
 ```javascript
@@ -120,17 +124,27 @@ declare module "vitest" {
 }
 ```
 
+> [!TIP]
+> If you are using `eslint` in your project you may want to add the following
+> lines at the beginning of your `vitest.d.ts` file:
+>
+> ```javascript
+> /* eslint-disable @typescript-eslint/no-empty-object-type */
+> /* eslint-disable @typescript-eslint/no-explicit-any */
+> ```
+
 If you get the following error in your tests
 
 ```
 Error: Invalid Chai property: toHaveReceivedCommandWith
 ```
 
-Then your probably forgot to run `expect.extend` with the matcher you are using in your test (see above)
+Then you probably forgot to run `expect.extend` with the matcher you are using in your test (see above)
 
 ## Sample usage
 
-Lets assume you have code that retrieves a secret from the AWS Secrets Manager
+Lets assume you have written a function to read a secret from the AWS Secrets
+Manager. It may look like this:
 
 ```typescript
 // src/main.ts
@@ -150,8 +164,10 @@ export async function readSecret(secretId: string): Promise<string> {
 }
 ```
 
-You can test this with vite without doing any network requests thanks to
-`aws-sdk-client-mock`
+Naturally we want to test this function to verify it either returns the secret
+when found or raises an exception otherwise. But we do not want to do actual
+AWS API calls. We can write a test with `vite` without doing any network requests
+thanks to `aws-sdk-client-mock`. This test may look like this:
 
 ```typescript
 // tests/main.test.ts
@@ -180,9 +196,16 @@ describe("readSecret", () => {
 });
 ```
 
-But we may want to actually inspect our mock client to verify that we actually
-have sent a specific command. We can do this by changing our testfile
-and registering custom matchers.
+The test above verifies our `readSecret` function does indeed return the value
+of the secret when the API response includes a `SecretString`. However we have
+not validated we are actually retrieving the correct secret.
+
+We may want to actually inspect our mock client to verify we sent
+a specific command. We can do this with our custom expect matcher
+`expect(mockClient).toHaveReceivedCommandWith(...)`.
+
+To make use of it we are changing our testfile and registering
+custom matchers
 
 ```typescript
 // tests/main.test.ts
@@ -230,7 +253,7 @@ describe("readSecret", () => {
 
 In order to run tests locally, execute the following
 
-```
+```console
 npm ci
 npm run test:coverage
 ```
