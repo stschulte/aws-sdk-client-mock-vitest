@@ -140,8 +140,7 @@ function toHaveReceivedCommandTimes<Input extends object, Output extends Metadat
   command: AwsCommandConstructor<Input, Output>,
   times: number,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, stringify } = this.utils;
+  const { isNot, utils: { diff, stringify } } = this;
 
   const callCount = client.commandCalls(command).length;
   const pass = callCount === times;
@@ -163,8 +162,7 @@ function toHaveReceivedCommandOnce<Input extends object, Output extends Metadata
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, stringify } = this.utils;
+  const { isNot, utils: { diff, stringify } } = this;
 
   const callCount = client.commandCalls(command).length;
   const pass = callCount === 1;
@@ -185,8 +183,7 @@ function toHaveReceivedCommand<Input extends object, Output extends MetadataBear
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, stringify } = this.utils;
+  const { isNot, utils: { diff, stringify } } = this;
 
   const callCount = client.commandCalls(command).length;
   const pass = callCount >= 1;
@@ -208,14 +205,11 @@ function toHaveReceivedCommandWith<Input extends object, Output extends Metadata
   command: AwsCommandConstructor<Input, Output>,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, printExpected, stringify } = this.utils;
+  const { isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
-  const pass = calls.some(call =>
-    new ObjectContaining(input).asymmetricMatch(call.args[0].input),
-  );
+  const pass = calls.some(call => new ObjectContaining(input).asymmetricMatch(call.args[0].input));
 
   return {
     message() {
@@ -235,14 +229,11 @@ function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output exten
   command: AwsCommandConstructor<Input, Output>,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, printExpected, stringify } = this.utils;
+  const { isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
-  const hasCallWithArgs = calls.some(call =>
-    new ObjectContaining(input).asymmetricMatch(call.args[0].input),
-  );
+  const hasCallWithArgs = calls.some(call => new ObjectContaining(input).asymmetricMatch(call.args[0].input));
 
   const pass = calls.length === 1 && hasCallWithArgs;
 
@@ -265,8 +256,7 @@ function toHaveReceivedNthCommandWith<Input extends object, Output extends Metad
   times: number,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, printExpected, stringify } = this.utils;
+  const { isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
@@ -293,8 +283,7 @@ function toHaveReceivedLastCommandWith<Input extends object, Output extends Meta
   command: AwsCommandConstructor<Input, Output>,
   input: Input & Record<string, unknown>,
 ): ExpectationResult {
-  const { isNot } = this;
-  const { diff, printExpected, stringify } = this.utils;
+  const { isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
@@ -312,15 +301,14 @@ function toHaveReceivedLastCommandWith<Input extends object, Output extends Meta
     },
     pass,
   };
-};
+}
 const toReceiveLastCommandWith = toHaveReceivedLastCommandWith;
 
 function toHaveReceivedAnyCommand(
   this: MatcherState,
   client: AwsStub<object, MetadataBearer, unknown>,
 ) {
-  const { isNot } = this;
-  const { diff, stringify } = this.utils;
+  const { isNot, utils: { diff, stringify } } = this;
 
   const calls = client.calls();
   const pass = calls.length > 0;
