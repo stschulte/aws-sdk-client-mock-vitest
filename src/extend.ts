@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'vitest';
 
-import { allCustomMatcher, type CustomMatcher } from './matcher.js';
+import { allCustomMatcherWithAliases, type CustomMatcher } from './matcher.js';
 
-expect.extend(allCustomMatcher);
+expect.extend(allCustomMatcherWithAliases);
 
 declare module 'vitest' {
   interface Assertion<T = any> extends CustomMatcher<T> {}
