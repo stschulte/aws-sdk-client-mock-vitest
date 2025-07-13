@@ -29,7 +29,33 @@ You must register the new matchers explicity (think about putting this to a
 register the matchers you are interested in, or register all available matchers
 (the easiest solution).
 
-To register all matchers use the following:
+## Automatic Setup (Recommended)
+
+The easiest way to get started is to use the automatic extend functionality which sets up both the matchers and TypeScript declarations in one import:
+
+```javascript
+/*
+  you may want to put the following into a file tests/setup.ts
+  and then specify your vite.config.ts as such
+
+      import { defineConfig } from "vitest/config";
+
+      export default defineConfig({
+        test: {
+          setupFiles: ["tests/setup.ts"],
+        },
+      });
+
+  to add the custom matchers before each test run
+*/
+import "aws-sdk-client-mock-vitest/extend";
+```
+
+This automatically extends vitest's `expect` with all available matchers and includes the necessary TypeScript declarations, so you don't need to create a separate `vitest.d.ts` file.
+
+## Manual Setup
+
+Alternatively, you can manually register matchers. To register all matchers use the following:
 
 ```javascript
 /*
@@ -49,7 +75,7 @@ To register all matchers use the following:
 import { expect } from "vitest";
 import { allCustomMatcher } from "aws-sdk-client-mock-vitest";
 
-expect.extend(allCustomMatcher)
+expect.extend(allCustomMatcher);
 ```
 
 You can also register just the matchers you care about:
@@ -111,7 +137,10 @@ expect.extend({
 
 ## Typescript support
 
-In case you are using typescript, create a `vitest.d.ts` file with the following content
+> [!NOTE]
+> If you're using the automatic setup with `import "aws-sdk-client-mock-vitest/extend"`, TypeScript declarations are automatically included and you can skip this section.
+
+In case you are using typescript with manual setup, create a `vitest.d.ts` file with the following content
 
 ```javascript
 // tests/vitest.d.ts

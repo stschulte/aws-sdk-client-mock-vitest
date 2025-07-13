@@ -12,6 +12,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./extend": {
+      "types": "./dist/extend.d.ts",
+      "default": "./dist/extend.js"
     }
   },
   "scripts": {
