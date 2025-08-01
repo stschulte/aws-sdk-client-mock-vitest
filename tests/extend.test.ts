@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 describe('extend', () => {
   const secretMock = mockClient(SecretsManagerClient);
 
-  it('should make matchers available', () => {
+  it('makes matchers available', () => {
     expect(secretMock).not.toHaveReceivedCommand(GetSecretValueCommand);
     expect(secretMock).toHaveReceivedCommandTimes(GetSecretValueCommand, 0);
     expect(secretMock).not.toHaveReceivedAnyCommand();
