@@ -24,51 +24,58 @@ on your AWS clients.
 npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
-You must register the new matchers explicity (think about putting this to a
-[setup file](https://vitest.dev/config/#setupfiles)). You can either just
-register the matchers you are interested in, or register all available matchers
-(the easiest solution).
+In order to use the new matchers, we have to register them. The easiest way is
+to do this in a [setup file](https://vitest.dev/config/#setupfiles).
 
-To register all matchers use the following:
+You can either use a helper to extend with all matchers or manually only extend
+the matchers you are interested in.
+
+## Automatic Setup (Recommended)
+
+Create a a new file `tests/setup.ts` with the following content (or adapt an
+existing one):
 
 ```javascript
-/*
-  you may want to put the following into a file tests/setup.ts
-  and then specify your vite.config.ts as such
+// tests/setup.ts
 
-      import { defineConfig } from "vitest/config";
+import "aws-sdk-client-mock-vitest/extend";
+```
 
-      export default defineConfig({
-        test: {
-          setupFiles: ["tests/setup.ts"],
-        },
-      });
+Now ensure this file is loaded by vitest before each test by adapting your
+`vite.config.ts` file:
 
-  to add the custom matchers before each test run
-*/
+```javascript
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    // Ensure our file is loaded and matchers are extended
+    setupFiles: ["tests/setup.ts"],
+  },
+});
+```
+
+## Manual Setup
+
+Alternatively, you can manually register matchers.
+
+Create a a new file `tests/setup.ts` with the following content (or adapt an
+existing one):
+
+```javascript
+// tests/setup.ts
+
 import { expect } from "vitest";
 import { allCustomMatcher } from "aws-sdk-client-mock-vitest";
 
-expect.extend(allCustomMatcher)
+expect.extend(allCustomMatcher);
 ```
 
-You can also register just the matchers you care about:
+We can only extend with individual matchers:
 
 ```javascript
-/*
-  you may want to put the following into a file tests/setup.ts
-  and then specify your vite.config.ts as such
+// tests/setup.ts
 
-      import { defineConfig } from "vitest/config";
-
-      export default defineConfig({
-        test: {
-          setupFiles: ["tests/setup.ts"],
-        },
-      });
-
-  to add the custom matchers before each test run
-*/
 import { expect } from "vitest";
 import {
   toReceiveCommandTimes,
@@ -109,9 +116,26 @@ expect.extend({
 });
 ```
 
+Now ensure this file is loaded by vitest before each test by adapting your
+`vite.config.ts` file:
+
+```javascript
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    // Ensure our file is loaded and matchers are extended
+    setupFiles: ["tests/setup.ts"],
+  },
+});
+```
+
 ## Typescript support
 
-In case you are using typescript, create a `vitest.d.ts` file with the following content
+> [!NOTE]
+> If you're using the automatic setup with `import "aws-sdk-client-mock-vitest/extend"`, TypeScript declarations are automatically included and you can skip this section.
+
+In case you are using typescript with manual setup, create a `vitest.d.ts` file with the following content
 
 ```javascript
 // tests/vitest.d.ts
