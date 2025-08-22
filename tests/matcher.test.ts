@@ -463,7 +463,7 @@ describe('toReceiveCommandWith', () => {
 
   it('passes with a correct asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -561,7 +561,7 @@ describe('toReceiveCommandWith', () => {
 
   it('fails on failed asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -624,7 +624,7 @@ describe('toReceiveCommandWith', () => {
 
     it('fails on correct asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -652,7 +652,7 @@ describe('toReceiveCommandWith', () => {
 
     it('passes on incorrect asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -689,7 +689,7 @@ describe('toHaveReceivedCommandWith', () => {
 
   it('passes with a correct asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -787,7 +787,7 @@ describe('toHaveReceivedCommandWith', () => {
 
   it('fails on failed asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -850,7 +850,7 @@ describe('toHaveReceivedCommandWith', () => {
 
     it('fails on correct asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -878,7 +878,7 @@ describe('toHaveReceivedCommandWith', () => {
 
     it('passes on incorrect asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1529,7 +1529,7 @@ describe('toHaveReceivedCommandExactlyOnceWith', () => {
 
   it('passes with a correct asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1592,7 +1592,7 @@ describe('toHaveReceivedCommandExactlyOnceWith', () => {
 
   it('fails on failed asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1663,7 +1663,7 @@ describe('toHaveReceivedCommandExactlyOnceWith', () => {
 
     it('fails on correct asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1691,7 +1691,7 @@ describe('toHaveReceivedCommandExactlyOnceWith', () => {
 
     it('passes on incorrect asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1728,7 +1728,7 @@ describe('toReceiveCommandExactlyOnceWith', () => {
 
   it('passes with a correct asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1791,7 +1791,7 @@ describe('toReceiveCommandExactlyOnceWith', () => {
 
   it('fails on failed asymmetric match', async () => {
     // Assume  code that uses a random string for the bucket key with a known extension
-    const name = randomUUID().toString();
+    const name = randomUUID();
     const s3Mock = mockClient(S3Client);
     const s3 = new S3Client({});
     await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1862,7 +1862,7 @@ describe('toReceiveCommandExactlyOnceWith', () => {
 
     it('fails on correct asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
@@ -1890,7 +1890,7 @@ describe('toReceiveCommandExactlyOnceWith', () => {
 
     it('passes on incorrect asymmetric match', async () => {
       // Assume  code that uses a random string for the bucket key with a known extension
-      const name = randomUUID().toString();
+      const name = randomUUID();
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: `${name}.txt` }));
