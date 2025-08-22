@@ -6,13 +6,16 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  id-token: write
+
 jobs:
   validate:
     name: Validate TypeScript
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node 20
         uses: actions/setup-node@v4
@@ -31,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node 20
         uses: actions/setup-node@v4
@@ -54,9 +57,10 @@ jobs:
           - 18
           - 20
           - 22
+          - 24
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node ${{ matrix.node_version }}
         uses: actions/setup-node@v4
@@ -75,9 +79,9 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
-        if: matrix.node_version == 22
+        if: matrix.node_version == 24
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
 
       - name: Build
         run: npm pack
