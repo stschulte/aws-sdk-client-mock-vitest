@@ -133,12 +133,17 @@ export default defineConfig({
 ## Typescript support
 
 > [!NOTE]
-> If you're using the automatic setup with `import "aws-sdk-client-mock-vitest/extend"`, TypeScript declarations are automatically included and you can skip this section.
+> If you're using the automatic setup with
+> `import "aws-sdk-client-mock-vitest/extend"` and
+> a [moduleResoltion](https://www.typescriptlang.org/tsconfig/#moduleResolution)
+> setting of at least `node16` or `bundler` TypeScript declarations are
+> automatically included and you can skip this section.
 
-In case you are using typescript with manual setup, create a `vitest.d.ts` file with the following content
+Create a `vitest.d.ts` file with the following content
 
 ```javascript
 // tests/vitest.d.ts
+
 import "vitest";
 import { CustomMatcher } from "aws-sdk-client-mock-vitest";
 
