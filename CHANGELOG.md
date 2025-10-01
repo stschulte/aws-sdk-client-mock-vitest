@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.1] - 2025-10-01
+
 ### Changed
 
 - Better documentation of TypeScript module augmentation (no code change)
