@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Support @vitest/expect version `4`. You should upgrade to this version when
+  using @vitest 4. Otherwise you should keep at `aws-sdk-client-mock-vitest`
+  version `6.2.1`.
+
+
 ## [6.2.1] - 2025-10-01
 
 ### Changed

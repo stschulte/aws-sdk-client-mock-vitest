@@ -24,6 +24,24 @@ on your AWS clients.
 npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
+> [!IMPORTANT]  
+> This package depends on `@vitest/expect` so you normally want to use a package
+> version that fits the vite version you are using.
+> The latest version should work for `vitest` version `4`. If you are using an
+> older version of `vitest`, you should stick to an earlier version as well.
+>
+> If you use vitest `3`:
+>
+>     npm run install --save-dev aws-sdk-client-mock-vitest@^6.2.1
+>
+> If you use vitest `2`:
+>
+>     npm run install --save-dev aws-sdk-client-mock-vitest@^5.1.0
+>
+> If you use vitest `1`:
+>
+>     npm run install --save-dev aws-sdk-client-mock-vitest@^3.0.0
+
 In order to use the new matchers, we have to register them. The easiest way is
 to do this in a [setup file](https://vitest.dev/config/#setupfiles).
 
