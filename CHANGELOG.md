@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0] - 2025-11-01
+
 ### Changed
 
 - Support `@vitest/expect` version `4`. You should upgrade to this version when
