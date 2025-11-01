@@ -45,7 +45,7 @@ interface BaseMatcher<R> {
     Output extends MetadataBearer,
   >(
     command: AwsCommandConstructor<Input, Output>,
-    input: Partial<Input>
+    input: Partial<Input & Record<string, unknown>>
   ): R;
 
   toHaveReceivedCommandOnce<
@@ -68,7 +68,7 @@ interface BaseMatcher<R> {
     Output extends MetadataBearer,
   >(
     command: AwsCommandConstructor<Input, Output>,
-    input: Partial<Input>
+    input: Partial<Input & Record<string, unknown>>
   ): R;
 
   toHaveReceivedLastCommandWith<
@@ -76,7 +76,7 @@ interface BaseMatcher<R> {
     Output extends MetadataBearer,
   >(
     command: AwsCommandConstructor<Input, Output>,
-    input: Partial<Input>
+    input: Partial<Input & Record<string, unknown>>
   ): R;
 
   toHaveReceivedNthCommandWith<
@@ -85,7 +85,7 @@ interface BaseMatcher<R> {
   >(
     command: AwsCommandConstructor<Input, Output>,
     times: number,
-    input: Partial<Input>
+    input: Partial<Input & Record<string, unknown>>
   ): R;
 }
 
@@ -95,7 +95,7 @@ export function formatCalls<Input extends object, Output extends MetadataBearer,
   message: string,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<TCmdInput, TCmdOutput> | undefined,
-  expectedCall: TCmdInput | undefined,
+  expectedCall: Partial<TCmdInput> | undefined,
   utils: {
     diff: MatcherState['utils']['diff'];
     stringify: MatcherState['utils']['stringify'];
@@ -203,7 +203,7 @@ function toHaveReceivedCommandWith<Input extends object, Output extends Metadata
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Input & Record<string, unknown>,
+  input: Partial<Input & Record<string, unknown>>,
 ): ExpectationResult {
   const { isNot, utils: { diff, printExpected, stringify } } = this;
 
@@ -227,7 +227,7 @@ function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output exten
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Input & Record<string, unknown>,
+  input: Partial<Input & Record<string, unknown>>,
 ): ExpectationResult {
   const { isNot, utils: { diff, printExpected, stringify } } = this;
 
@@ -254,7 +254,7 @@ function toHaveReceivedNthCommandWith<Input extends object, Output extends Metad
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
   times: number,
-  input: Input & Record<string, unknown>,
+  input: Partial<Input & Record<string, unknown>>,
 ): ExpectationResult {
   const { isNot, utils: { diff, printExpected, stringify } } = this;
 
@@ -281,7 +281,7 @@ function toHaveReceivedLastCommandWith<Input extends object, Output extends Meta
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Input & Record<string, unknown>,
+  input: Partial<Input & Record<string, unknown>>,
 ): ExpectationResult {
   const { isNot, utils: { diff, printExpected, stringify } } = this;
 
