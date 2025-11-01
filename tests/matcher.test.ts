@@ -5,8 +5,8 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { stringify } from '@vitest/utils';
 import { diff } from '@vitest/utils/diff';
+import { stringify } from '@vitest/utils/display';
 import { mockClient } from 'aws-sdk-client-mock';
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
