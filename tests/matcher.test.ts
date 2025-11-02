@@ -69,6 +69,21 @@ describe('formatCalls', () => {
 
     expect(result).toStrictEqual(expectedResult);
   });
+
+  it('does format calls without expected', async () => {
+    const s3Mock = mockClient(S3Client);
+
+    const s3 = new S3Client({});
+    await s3.send(new GetBucketAclCommand({ Bucket: 'foo' }));
+    await s3.send(new GetBucketAclCommand({ Bucket: 'bar' }));
+
+    /* If we have no expected calls, formatCalls should just stringify existing calls
+       instead of printing a diff */
+    const result = formatCalls('Some message', s3Mock, GetBucketAclCommand, undefined, { diff, stringify });
+    const expectedResult = testFile('format-calls-nodiff-example');
+
+    expect(result).toStrictEqual(expectedResult);
+  });
 });
 
 describe('toReceiveCommandTimes', () => {

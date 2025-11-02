@@ -1,6 +1,24 @@
 import { describe, expect, it } from 'vitest';
 
-import { notNull, notUndefined, ordinalOf } from '../src/utils.js';
+import { indent, notNull, notUndefined, ordinalOf } from '../src/utils.js';
+
+describe('indent', () => {
+  it('does nothing when indent level is 0', () => {
+    expect(indent('foo\nbar', 0)).toBe('foo\nbar');
+  });
+
+  it('does indent with 2 spaces', () => {
+    expect(indent('foo\nbar', 2)).toBe('  foo\n  bar');
+  });
+
+  it('does indent with 4 spaces', () => {
+    expect(indent('foo\nbar', 4)).toBe('    foo\n    bar');
+  });
+
+  it('ignores empty lines', () => {
+    expect(indent('foo\n\nbar', 4)).toBe('    foo\n\n    bar');
+  });
+});
 
 describe('notNull', () => {
   it('returns true when not null', () => {

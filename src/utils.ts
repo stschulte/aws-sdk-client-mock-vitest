@@ -1,3 +1,11 @@
+export function indent(text: string, level: number): string {
+  const pad = ' '.repeat(level);
+  return text
+    .split('\n')
+    .map(line => line.length === 0 ? '' : `${pad}${line}`)
+    .join('\n');
+}
+
 export function notNull<T>(obj: null | T): obj is T {
   return obj !== null;
 }
