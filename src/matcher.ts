@@ -1,13 +1,10 @@
 import type { MetadataBearer } from '@smithy/types';
-import type {
-  ExpectationResult,
-  MatcherState,
-} from '@vitest/expect';
+import type { ExpectationResult, MatcherState } from '@vitest/expect';
 import type { AwsCommand, AwsStub } from 'aws-sdk-client-mock';
 
 import { ObjectContaining } from '@vitest/expect';
 
-import { notUndefined, ordinalOf } from './utils.js';
+import { indent, notUndefined, ordinalOf } from './utils.js';
 
 /**
  * We define some aliases
@@ -123,10 +120,7 @@ export function formatCalls<Input extends object, Output extends MetadataBearer,
             '',
             expectedCall
               ? diff(expectedCall, input, { omitAnnotationLines: true })
-              : stringify(input)
-                  .split('\n')
-                  .map(line => `    ${line}`)
-                  .join('\n'),
+              : indent(stringify(input), 4),
             '',
           ].filter(notUndefined);
         }),

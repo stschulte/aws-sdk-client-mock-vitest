@@ -1,0 +1,17 @@
+Some message
+
+Received:
+
+   1st GetBucketAclCommand call
+
+    Object {
+      "Bucket": "foo",
+    }
+
+   2nd GetBucketAclCommand call
+
+    Object {
+      "Bucket": "bar",
+    }
+
+Number of calls: 2

@@ -25,8 +25,8 @@ BUILDTIME_DEPENDENCIES=(
     "@aws-sdk/client-secrets-manager"
     "aws-sdk-client-mock"
 
-    "eslint@9.38.0"
-    "@eslint/js@9.38.0"
+    "eslint"
+    "@eslint/js"
     "eslint-config-flat-gitignore"
     "eslint-plugin-perfectionist"
     "@stylistic/eslint-plugin"
