@@ -46,23 +46,23 @@
     "vitest": ">=3.2.0"
   },
   "dependencies": {
-    "@vitest/expect": "^4.0.6"
+    "@vitest/expect": "^4.0.7"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.922.0",
-    "@aws-sdk/client-secrets-manager": "^3.922.0",
-    "@eslint/js": "^9.38.0",
+    "@aws-sdk/client-s3": "^3.925.0",
+    "@aws-sdk/client-secrets-manager": "^3.925.0",
+    "@eslint/js": "^9.39.1",
     "@stylistic/eslint-plugin": "^5.5.0",
-    "@types/node": "^24.9.2",
-    "@vitest/coverage-v8": "^4.0.6",
-    "@vitest/eslint-plugin": "^1.4.0",
-    "@vitest/utils": "^4.0.6",
+    "@types/node": "^24.10.0",
+    "@vitest/coverage-v8": "^4.0.7",
+    "@vitest/eslint-plugin": "^1.4.1",
+    "@vitest/utils": "^4.0.7",
     "aws-sdk-client-mock": "^4.1.0",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.1",
     "eslint-config-flat-gitignore": "^2.1.0",
     "eslint-plugin-perfectionist": "^4.15.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2",
-    "vitest": "^4.0.6"
+    "typescript-eslint": "^8.46.3",
+    "vitest": "^4.0.7"
   }
 }
