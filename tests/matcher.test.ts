@@ -380,12 +380,14 @@ describe('toReceiveCommand', () => {
       }).toThrow(/expected "GetObjectCommand" to not be called at all, but actually been called 1 times/);
     });
 
-    it.fails('fails when command received multiple times', async () => {
+    it('fails when command received multiple times', async () => {
       const s3Mock = mockClient(S3Client);
       const s3 = new S3Client({});
       await s3.send(new GetObjectCommand({ Bucket: 'foo', Key: 'test.txt' }));
       await s3.send(new GetObjectCommand({ Bucket: 'bar', Key: 'test.txt' }));
-      expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
+      expect(() => {
+        expect(s3Mock).not.toReceiveCommand(GetObjectCommand);
+      }).toThrow(/expected "GetObjectCommand" to not be called at all, but actually been called 2 times/);
     });
   });
 });
