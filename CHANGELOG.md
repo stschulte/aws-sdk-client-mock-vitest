@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Additional exports `AliasMatcher` and `BaseMatcher` which can be used
+  instead of `CustomMatcher`. Those can be used in your `vitest.d.ts` to
+  only make matchers known that you actually extend.
+
 ### Changed
 
 - Updated dependencies

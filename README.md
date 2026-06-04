@@ -25,10 +25,10 @@ npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
 > [!IMPORTANT]  
-> This package depends on `@vitest/expect` so you normally want to use a package
-> version that fits the vite version you are using.
+> This package depends on `@vitest/expect` so ensure you install a version of
+> `aws-sdk-client-mock-vitest` that matches your `vitest` version.
 > The latest version should work for `vitest` version `4`. If you are using an
-> older version of `vitest`, you should stick to an earlier version as well.
+> older version of `vitest`, you can use an earlier version of `aws-sdk-client-mock-vitest`.
 >
 > If you use vitest `3`:
 >
@@ -158,7 +158,7 @@ export default defineConfig({
 
 Create a `vitest.d.ts` file with the following content
 
-```javascript
+```typescript
 // tests/vitest.d.ts
 
 import "vitest";
@@ -166,6 +166,28 @@ import { CustomMatcher } from "aws-sdk-client-mock-vitest";
 
 declare module "vitest" {
   interface Matchers<T = any> extends CustomMatcher<T> {}
+}
+```
+
+This ensures you get proper type support when you do something like
+
+```typescript
+expect(foo).toHaveReceivedCommandWith(...)
+```
+
+and make all matchers known (`BaseMatcher` and `AliasMatcher`).
+If you run `expect.extend` with `allCustomMatcher` but not
+`allCustomMatcherWithAliases`, you should only extend the interface with
+`BaseMatcher` instead:
+
+```typescript
+// tests/vitest.d.ts
+
+import "vitest";
+import { BaseMatcher } from "aws-sdk-client-mock-vitest";
+
+declare module "vitest" {
+  interface Matchers<T = any> extends BaseMatcher<T> {}
 }
 ```
 
