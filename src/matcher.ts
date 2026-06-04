@@ -342,7 +342,7 @@ const allCustomMatcherWithAliases = {
   toReceiveNthCommandWith,
 };
 
-export type { CustomMatcher };
+export type { AliasMatcher, BaseMatcher, CustomMatcher };
 export {
   allCustomMatcher,
   allCustomMatcherWithAliases,

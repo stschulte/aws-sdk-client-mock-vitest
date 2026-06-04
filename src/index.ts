@@ -1,4 +1,4 @@
-export type { CustomMatcher } from './matcher.js';
+export type { AliasMatcher, BaseMatcher, CustomMatcher } from './matcher.js';
 export {
   allCustomMatcher,
   allCustomMatcherWithAliases,
