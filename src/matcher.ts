@@ -1,23 +1,21 @@
 import type { MetadataBearer } from '@smithy/types';
-import type { ExpectationResult, MatcherState } from '@vitest/expect';
 import type { AwsCommand, AwsStub } from 'aws-sdk-client-mock';
+import type { MatcherResult, MatcherState } from 'vitest';
 
-import { ObjectContaining } from '@vitest/expect';
-
-import { indent, notUndefined, ordinalOf } from './utils.js';
+import { asymmetricMatch, indent, notUndefined, ordinalOf } from './utils.js';
 
 /**
  * We define some aliases
  */
-interface AliasMatcher<R> {
-  toReceiveAnyCommand: BaseMatcher<R>['toHaveReceivedAnyCommand'];
-  toReceiveCommand: BaseMatcher<R>['toHaveReceivedCommand'];
-  toReceiveCommandExactlyOnceWith: BaseMatcher<R>['toHaveReceivedCommandExactlyOnceWith'];
-  toReceiveCommandOnce: BaseMatcher<R>['toHaveReceivedCommandOnce'];
-  toReceiveCommandTimes: BaseMatcher<R>['toHaveReceivedCommandTimes'];
-  toReceiveCommandWith: BaseMatcher<R>['toHaveReceivedCommandWith'];
-  toReceiveLastCommandWith: BaseMatcher<R>['toHaveReceivedLastCommandWith'];
-  toReceiveNthCommandWith: BaseMatcher<R>['toHaveReceivedNthCommandWith'];
+interface AliasMatcher<R, T> {
+  toReceiveAnyCommand: BaseMatcher<R, T>['toHaveReceivedAnyCommand'];
+  toReceiveCommand: BaseMatcher<R, T>['toHaveReceivedCommand'];
+  toReceiveCommandExactlyOnceWith: BaseMatcher<R, T>['toHaveReceivedCommandExactlyOnceWith'];
+  toReceiveCommandOnce: BaseMatcher<R, T>['toHaveReceivedCommandOnce'];
+  toReceiveCommandTimes: BaseMatcher<R, T>['toHaveReceivedCommandTimes'];
+  toReceiveCommandWith: BaseMatcher<R, T>['toHaveReceivedCommandWith'];
+  toReceiveLastCommandWith: BaseMatcher<R, T>['toHaveReceivedLastCommandWith'];
+  toReceiveNthCommandWith: BaseMatcher<R, T>['toHaveReceivedNthCommandWith'];
 }
 
 type AwsCommandConstructor<
@@ -30,7 +28,8 @@ type AwsCommandConstructor<
  * https://vitest.dev/guide/extending-matchers.html#extending-matchers
  * for reference
  */
-interface BaseMatcher<R> {
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+interface BaseMatcher<R, _T> {
   toHaveReceivedAnyCommand(): R;
 
   toHaveReceivedCommand<Input extends object, Output extends MetadataBearer>(
@@ -42,7 +41,7 @@ interface BaseMatcher<R> {
     Output extends MetadataBearer,
   >(
     command: AwsCommandConstructor<Input, Output>,
-    input: Partial<Input & Record<string, unknown>>
+    input: Partial<Input>
   ): R;
 
   toHaveReceivedCommandOnce<
@@ -65,7 +64,7 @@ interface BaseMatcher<R> {
     Output extends MetadataBearer,
   >(
     command: AwsCommandConstructor<Input, Output>,
-    input: Partial<Input & Record<string, unknown>>
+    input: Partial<Input>
   ): R;
 
   toHaveReceivedLastCommandWith<
@@ -73,7 +72,7 @@ interface BaseMatcher<R> {
     Output extends MetadataBearer,
   >(
     command: AwsCommandConstructor<Input, Output>,
-    input: Partial<Input & Record<string, unknown>>
+    input: Partial<Input>
   ): R;
 
   toHaveReceivedNthCommandWith<
@@ -82,11 +81,11 @@ interface BaseMatcher<R> {
   >(
     command: AwsCommandConstructor<Input, Output>,
     times: number,
-    input: Partial<Input & Record<string, unknown>>
+    input: Partial<Input>
   ): R;
 }
 
-type CustomMatcher<R = unknown> = AliasMatcher<R> & BaseMatcher<R>;
+type CustomMatcher<R, T> = AliasMatcher<R, T> & BaseMatcher<R, T>;
 
 export function formatCalls<Input extends object, Output extends MetadataBearer, TCmdInput extends Input, TCmdOutput extends Output>(
   message: string,
@@ -133,7 +132,7 @@ function toHaveReceivedCommandTimes<Input extends object, Output extends Metadat
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
   times: number,
-): ExpectationResult {
+): MatcherResult {
   const { isNot, utils: { diff, stringify } } = this;
 
   const callCount = client.commandCalls(command).length;
@@ -155,7 +154,7 @@ function toHaveReceivedCommandOnce<Input extends object, Output extends Metadata
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-): ExpectationResult {
+): MatcherResult {
   const { isNot, utils: { diff, stringify } } = this;
 
   const callCount = client.commandCalls(command).length;
@@ -176,7 +175,7 @@ function toHaveReceivedCommand<Input extends object, Output extends MetadataBear
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-): ExpectationResult {
+): MatcherResult {
   const { isNot, utils: { diff, stringify } } = this;
 
   const callCount = client.commandCalls(command).length;
@@ -197,13 +196,13 @@ function toHaveReceivedCommandWith<Input extends object, Output extends Metadata
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Partial<Input & Record<string, unknown>>,
-): ExpectationResult {
-  const { isNot, utils: { diff, printExpected, stringify } } = this;
+  input: Partial<Input>,
+): MatcherResult {
+  const { equals, isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
-  const pass = calls.some(call => new ObjectContaining(input).asymmetricMatch(call.args[0].input));
+  const pass = calls.some(call => asymmetricMatch(equals, input, call.args[0].input));
 
   return {
     message() {
@@ -221,13 +220,13 @@ function toHaveReceivedCommandExactlyOnceWith<Input extends object, Output exten
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Partial<Input & Record<string, unknown>>,
-): ExpectationResult {
-  const { isNot, utils: { diff, printExpected, stringify } } = this;
+  input: Partial<Input>,
+): MatcherResult {
+  const { equals, isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
-  const hasCallWithArgs = calls.some(call => new ObjectContaining(input).asymmetricMatch(call.args[0].input));
+  const hasCallWithArgs = calls.some(call => asymmetricMatch(equals, input, call.args[0].input));
 
   const pass = calls.length === 1 && hasCallWithArgs;
 
@@ -248,15 +247,15 @@ function toHaveReceivedNthCommandWith<Input extends object, Output extends Metad
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
   times: number,
-  input: Partial<Input & Record<string, unknown>>,
-): ExpectationResult {
-  const { isNot, utils: { diff, printExpected, stringify } } = this;
+  input: Partial<Input>,
+): MatcherResult {
+  const { equals, isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
   const call = calls.length < times ? undefined : calls[times - 1];
   const pass = call
-    ? new ObjectContaining(input).asymmetricMatch(call.args[0].input)
+    ? asymmetricMatch(equals, input, call.args[0].input)
     : false;
 
   return {
@@ -275,15 +274,15 @@ function toHaveReceivedLastCommandWith<Input extends object, Output extends Meta
   this: MatcherState,
   client: AwsStub<Input, Output, unknown>,
   command: AwsCommandConstructor<Input, Output>,
-  input: Partial<Input & Record<string, unknown>>,
-): ExpectationResult {
-  const { isNot, utils: { diff, printExpected, stringify } } = this;
+  input: Partial<Input>,
+): MatcherResult {
+  const { equals, isNot, utils: { diff, printExpected, stringify } } = this;
 
   const calls = client.commandCalls(command);
 
   const call = calls.length === 0 ? undefined : calls[calls.length - 1];
   const pass = call
-    ? new ObjectContaining(input).asymmetricMatch(call.args[0].input)
+    ? asymmetricMatch(equals, input, call.args[0].input)
     : false;
 
   return {

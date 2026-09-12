@@ -25,7 +25,9 @@ describe('aws-sdk-client-mock-vitest', () => {
     'toReceiveCommandExactlyOnceWith',
     'toHaveReceivedCommandExactlyOnceWith',
   ])('extend matcher to extend with %s', (matcher) => {
-    expect(expect('something')).toHaveProperty(matcher);
+    /* eslint-disable-next-line vitest/valid-expect */
+    const expectObject = expect('something');
+    expect(expectObject).toHaveProperty(matcher);
   });
 
   // https://github.com/stschulte/aws-sdk-client-mock-vitest/issues/5
