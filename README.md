@@ -25,10 +25,14 @@ npm install --save-dev aws-sdk-client-mock-vitest
 ```
 
 > [!IMPORTANT]  
-> This package depends on `@vitest/expect` so ensure you install a version of
+> Ensure you install a version of
 > `aws-sdk-client-mock-vitest` that matches your `vitest` version.
-> The latest version should work for `vitest` version `4`. If you are using an
+> The latest version should work for `vitest` version `5`. If you are using an
 > older version of `vitest`, you can use an earlier version of `aws-sdk-client-mock-vitest`.
+>
+> If you use vitest `4`:
+>
+>     npm run install --save-dev aws-sdk-client-mock-vitest@^7.1.0
 >
 > If you use vitest `3`:
 >
@@ -41,6 +45,9 @@ npm install --save-dev aws-sdk-client-mock-vitest
 > If you use vitest `1`:
 >
 >     npm run install --save-dev aws-sdk-client-mock-vitest@^3.0.0
+>
+> Please note that the documentation describes the steps for the latest version.
+> In case you use an earlier version, consult a previous `README` as well.
 
 In order to use the new matchers, we have to register them. The easiest way is
 to do this in a [setup file](https://vitest.dev/config/#setupfiles).
@@ -85,6 +92,10 @@ existing one):
 import { expect } from "vitest";
 import { allCustomMatcher } from "aws-sdk-client-mock-vitest";
 
+// extend with all matchers, but without aliases.
+// To include aliases e.g. to use `toReceiveCommandTimes` instead of
+// `toHaveReceivedCommandTimes`, import and extend
+// with `allCustomMatcherWithAliases`.
 expect.extend(allCustomMatcher);
 ```
 
@@ -152,7 +163,7 @@ export default defineConfig({
 > [!NOTE]
 > If you're using the automatic setup with
 > `import "aws-sdk-client-mock-vitest/extend"` and
-> a [moduleResoltion](https://www.typescriptlang.org/tsconfig/#moduleResolution)
+> a [moduleResolution](https://www.typescriptlang.org/tsconfig/#moduleResolution)
 > setting of at least `node16` or `bundler` TypeScript declarations are
 > automatically included and you can skip this section.
 
@@ -165,7 +176,7 @@ import "vitest";
 import { CustomMatcher } from "aws-sdk-client-mock-vitest";
 
 declare module "vitest" {
-  interface Matchers<T = any> extends CustomMatcher<T> {}
+  interface Matchers<R, T> extends CustomMatcher<R, T> {}
 }
 ```
 
@@ -187,7 +198,7 @@ import "vitest";
 import { BaseMatcher } from "aws-sdk-client-mock-vitest";
 
 declare module "vitest" {
-  interface Matchers<T = any> extends BaseMatcher<T> {}
+  interface Matchers<R, T> extends BaseMatcher<R, T> {}
 }
 ```
 
@@ -197,7 +208,6 @@ declare module "vitest" {
 >
 > ```javascript
 > /* eslint-disable @typescript-eslint/no-empty-object-type */
-> /* eslint-disable @typescript-eslint/no-explicit-any */
 > ```
 
 If you get the following error in your tests

@@ -13,10 +13,6 @@
 
 set -e
 
-RUNTIME_DEPENDENCIES=(
-  "@vitest/expect"
-)
-
 BUILDTIME_DEPENDENCIES=(
     "typescript"
     "@types/node"
@@ -50,12 +46,6 @@ NEW_PACKAGE_JSON=`mktemp package.json.XXXXXXXXXX`
 chmod 0644 "$NEW_PACKAGE_JSON"
 jq 'del(.dependencies, .devDependencies)' package.json > "$NEW_PACKAGE_JSON"
 mv "$NEW_PACKAGE_JSON" package.json
-
-echo ">> Installing dependencies"
-for PKG in "${RUNTIME_DEPENDENCIES[@]}"; do
-  echo " ● ${PKG}"
-done
-npm install "${RUNTIME_DEPENDENCIES[@]}"
 
 echo ">> Installing development dependencies"
 for PKG in "${BUILDTIME_DEPENDENCIES[@]}"; do

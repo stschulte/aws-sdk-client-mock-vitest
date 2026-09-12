@@ -1,3 +1,23 @@
+export function asymmetricMatch<T extends object>(compareFn: (a: unknown, b: unknown) => boolean, sample: Partial<T>, other: T): boolean {
+  let result = true;
+
+  for (const property in sample) {
+    if (!(property in other)) {
+      result = false;
+      break;
+    }
+
+    const value = sample[property];
+    const otherValue = other[property];
+    if (!compareFn(value, otherValue)) {
+      result = false;
+      break;
+    }
+  }
+
+  return result;
+}
+
 export function indent(text: string, level: number): string {
   const pad = ' '.repeat(level);
   return text

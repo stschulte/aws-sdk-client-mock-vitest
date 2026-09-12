@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import 'vitest';
 import { expect } from 'vitest';
 
@@ -13,5 +13,5 @@ expect.extend(allCustomMatcherWithAliases);
  * see https://vitest.dev/guide/extending-matchers.html
  */
 declare module 'vitest' {
-  interface Matchers<T = any> extends CustomMatcher<T> {}
+  interface Matchers<R, T> extends CustomMatcher<R, T> {}
 }

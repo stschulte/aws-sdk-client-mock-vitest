@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Adapted for latest `vitest` version `5.x`. This drops a dependency to
+  `@vitest/expect` and `vitest` is now a peer dependency.
+- Drop node 20 support (not supported by vitest `5.x`)
+- Custom Matcher type has changed. You have to adapt your code when you extend
+  the matchers manually.
+
 ## [7.1.0] - 2026-06-05
 
 ### Added
