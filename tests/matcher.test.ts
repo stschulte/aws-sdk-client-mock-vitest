@@ -53,7 +53,7 @@ expect.extend({
 });
 
 function testFile(name: string): string {
-  return readFileSync(join(__dirname, 'data', name), 'utf8');
+  return readFileSync(join(import.meta.dirname, 'data', name), 'utf8');
 }
 
 describe('formatCalls', () => {
